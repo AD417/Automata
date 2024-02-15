@@ -8,8 +8,13 @@ import java.util.Set;
 public class Transition extends HashMap<State, HashMap<Character, Set<State>>> {
 
     public void initializeFor(Set<State> states, Alphabet alphabet) {
+        Set<State> DEFAULT = new HashSet<>();
         for (State state : states) {
-            computeIfAbsent(state, k -> new HashMap<>());
+            HashMap<Character, Set<State>> transitionMap = computeIfAbsent(state, k -> new HashMap<>());
+            for (Character c : alphabet) {
+                transitionMap.put(c, DEFAULT);
+            }
+            transitionMap.put(Alphabet.EPSILON, DEFAULT);
         }
     }
 

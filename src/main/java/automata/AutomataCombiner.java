@@ -64,7 +64,12 @@ public class AutomataCombiner {
 
         Set<State> acceptingCombo = new HashSet<>();
         for (State accept1 : dfa1.getAcceptingStates()) {
-            for (State accept2 : dfa2.getAcceptingStates()) {
+            for (State accept2 : dfa2.getStates()) {
+                acceptingCombo.add(combination.getCombo(accept1, accept2));
+            }
+        }
+        for (State accept2 : dfa2.getAcceptingStates()) {
+            for (State accept1 : dfa1.getStates()) {
                 acceptingCombo.add(combination.getCombo(accept1, accept2));
             }
         }

@@ -29,4 +29,11 @@ public class State {
     public int hashCode() {
         return Objects.hash(name);
     }
+
+    @Override
+    public String toString() {
+        return "State{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }
