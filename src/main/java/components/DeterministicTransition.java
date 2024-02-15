@@ -1,5 +1,6 @@
 package components;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -16,5 +17,9 @@ public class DeterministicTransition extends HashMap<State, HashMap<Character, S
 
     public State transition(State currentState, Character chr) {
         return getOrDefault(currentState, new HashMap<>()).get(chr);
+    }
+
+    public Set<State> getStates() {
+        return Collections.unmodifiableSet(keySet());
     }
 }

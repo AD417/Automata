@@ -29,6 +29,26 @@ public class DeterministicFiniteAutomaton {
         validate();
     }
 
+    public Set<State> getStates() {
+        return states;
+    }
+
+    public Alphabet getAlphabet() {
+        return alphabet;
+    }
+
+    public DeterministicTransition getTransitionFunction() {
+        return transitionFunction;
+    }
+
+    public State getStartState() {
+        return startState;
+    }
+
+    public Set<State> getAcceptingStates() {
+        return acceptingStates;
+    }
+
     private void validate() {
         for (State state : states) {
             for (Character c : alphabet) {

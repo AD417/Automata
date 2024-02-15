@@ -3,6 +3,8 @@ package components;
 import java.util.HashSet;
 
 public class Alphabet extends HashSet<Character> {
+    public static final Character EPSILON = '\uFFFF';
+
     public static final Alphabet ALL_LETTERS = Alphabet.withSymbols("qwertyuiopasdfghjklzxcvbnm");
     public static final Alphabet ALL_NUMBERS = Alphabet.withSymbols("1234567890-+.");
     public static Alphabet withSymbols(char firstSymbol, char ... otherSymbols) {
