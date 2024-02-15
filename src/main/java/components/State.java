@@ -2,17 +2,34 @@ package components;
 
 import java.util.Objects;
 
+/**
+ * A state in a Finite Automaton.
+ */
 public class State {
+    /** A counter to create unique states as needed by the user or program. */
     private static int STATE_COUNTER = 0;
+    /** The name of this state. Defaults to qXX, where X is a number. */
     private final String name;
 
+    /**
+     * Initialize a state with a default name.
+     */
     public State() {
         this("q"+STATE_COUNTER++);
     }
+
+    /**
+     * Initialize a state with a user-provided name.
+     * @param name The name to use. Assumed to be unique.
+     */
     public State(String name) {
         this.name = name;
     }
 
+    /**
+     * Get the name of this state.
+     * @return The name of this state.
+     */
     public String getName() {
         return name;
     }
