@@ -76,7 +76,6 @@ public class DeterministicTransition extends HashMap<State, HashMap<Character, S
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(formatter, "STATE"));
         for (Character c : alphabet) {
-            if (c == Alphabet.EPSILON) c = 'ε';
             sb.append(" |").append(String.format(formatter, c));
             lineLength += longest + 2;
         }

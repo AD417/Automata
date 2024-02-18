@@ -1,5 +1,4 @@
-import automata.AutomataCombiner;
-import automata.DFAConvertor;
+import automata.AutomataConvertor;
 import automata.DeterministicFiniteAutomaton;
 import automata.NondeterministicFiniteAutomaton;
 import components.*;
@@ -33,7 +32,7 @@ public class Main {
                 Set.of(c)
         );
 
-        DeterministicFiniteAutomaton dfa = DFAConvertor.convertNFA(nfa);
+        DeterministicFiniteAutomaton dfa = AutomataConvertor.NFAtoDFA(nfa);
 
         System.out.println(nfa);
         System.out.println();
