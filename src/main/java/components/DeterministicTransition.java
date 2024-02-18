@@ -60,4 +60,37 @@ public class DeterministicTransition extends HashMap<State, HashMap<Character, S
     public Set<State> getStates() {
         return Collections.unmodifiableSet(keySet());
     }
+
+    @Override
+    public String toString() {
+        if (size() == 0) return "{EMPTY}";
+        Set<State> states = getStates();
+        Set<Character> alphabet = get(states.stream().findFirst().orElseThrow()).keySet();
+
+        int longest = states.stream().mapToInt(x -> x.getName().length()).max().orElseThrow();
+        if (longest < 5) longest = 5;
+        longest++;
+        String formatter = "%"+longest+"s";
+
+        int lineLength = longest;
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format(formatter, "STATE"));
+        for (Character c : alphabet) {
+            if (c == Alphabet.EPSILON) c = 'ε';
+            sb.append(" |").append(String.format(formatter, c));
+            lineLength += longest + 2;
+        }
+        sb.append('\n');
+        sb.append("-".repeat(Math.max(0, lineLength)));
+        sb.append('\n');
+        states.stream().sorted().forEach(state -> {
+            sb.append(String.format(formatter, state));
+            for (Character c : alphabet) {
+                sb.append(" |").append(String.format(formatter, transition(state, c)));
+            }
+            sb.append('\n');
+        });
+
+        return sb.toString();
+    }
 }

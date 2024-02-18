@@ -97,4 +97,14 @@ public class NondeterministicFiniteAutomaton {
         }
         return output;
     }
+
+    @Override
+    public String toString() {
+        return "NFA N = (Q, Σ, δ, q0, F), where:\n" +
+                "Q = " + states + "\n" +
+                "Σ = " + alphabet + "\n" +
+                "δ = the following table:\n" + transitionFunction +
+                "q0 = " + startState + "\n" +
+                "F = " + acceptingStates;
+    }
 }

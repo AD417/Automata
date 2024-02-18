@@ -8,9 +8,9 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        State a = new State("a");
-        State b = new State("b");
-        State c = new State("c");
+        State a = new State();
+        State b = new State();
+        State c = new State();
 
         Set<State> states = Set.of(a,b,c);
         Alphabet alphabet = Alphabet.withSymbols("abc");
@@ -35,8 +35,8 @@ public class Main {
 
         DeterministicFiniteAutomaton dfa = DFAConvertor.convertNFA(nfa);
 
-        System.out.println("States: " + dfa.getStates());
-        System.out.println("Transition function: " + dfa.getTransitionFunction());
-        System.out.println("Accepting States: " + dfa.getAcceptingStates());
+        System.out.println(nfa);
+        System.out.println();
+        System.out.println(dfa);
     }
 }

@@ -66,8 +66,11 @@ public class DFAConvertor {
     }
 
     private static State subsetState(Set<State> states) {
-        StringBuilder sb = new StringBuilder("{ ");
-        states.stream().sorted().forEach(state -> sb.append(state.getName()).append(", "));
+        StringBuilder sb = new StringBuilder("{");
+        states.stream().sorted().forEach(state -> sb.append(state).append(", "));
+        if (sb.lastIndexOf(",") != -1) {
+            sb.replace(sb.lastIndexOf(","), sb.length(), "");
+        }
         sb.append("}");
         return new State(sb.toString());
     }

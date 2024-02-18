@@ -72,4 +72,14 @@ public class DeterministicFiniteAutomaton {
         }
         return acceptingStates.contains(state);
     }
+
+    @Override
+    public String toString() {
+        return "DFA D = (Q, Σ, δ, q0, F), where:\n" +
+                "Q = " + states + "\n" +
+                "Σ = " + alphabet + "\n" +
+                "δ = the following table:\n" + transitionFunction +
+                "q0 = " + startState + "\n" +
+                "F = " + acceptingStates;
+    }
 }

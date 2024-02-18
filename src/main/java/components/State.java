@@ -53,9 +53,7 @@ public class State implements Comparable<State> {
 
     @Override
     public String toString() {
-        return "State{" +
-                "name='" + name + '\'' +
-                '}';
+        return name;
     }
 
     @Override
