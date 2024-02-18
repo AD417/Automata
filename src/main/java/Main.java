@@ -1,4 +1,5 @@
 import automata.AutomataCombiner;
+import automata.DFAConvertor;
 import automata.DeterministicFiniteAutomaton;
 import automata.NondeterministicFiniteAutomaton;
 import components.*;
@@ -32,12 +33,10 @@ public class Main {
                 Set.of(c)
         );
 
-        System.out.println(nfa.accepts(""));
-        System.out.println(nfa.accepts("a"));
-        System.out.println(nfa.accepts("b"));
-        System.out.println(nfa.accepts("c"));
-        System.out.println(nfa.accepts("abc"));
-        System.out.println(nfa.accepts("abca"));
-        System.out.println(nfa.accepts("aaaaaaabbbbbbbbbbbcccccccccccc"));
+        DeterministicFiniteAutomaton dfa = DFAConvertor.convertNFA(nfa);
+
+        System.out.println("States: " + dfa.getStates());
+        System.out.println("Transition function: " + dfa.getTransitionFunction());
+        System.out.println("Accepting States: " + dfa.getAcceptingStates());
     }
 }

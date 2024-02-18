@@ -90,7 +90,7 @@ public class AutomataCombiner {
             StateCombination allStates
     ) {
         DeterministicTransition dtCombo = new DeterministicTransition();
-        dtCombo.initializeFor(allStates.getAllStates(), alphabet);
+        dtCombo.setDefaults(allStates.getAllStates(), alphabet);
         for (State in1 : dt1.getStates()) {
             for (State in2 : dt2.getStates()) {
                 State inCombo = allStates.getCombo(in1, in2);

@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * A state in a Finite Automaton.
  */
-public class State {
+public class State implements Comparable<State> {
     /** A counter to create unique states as needed by the user or program. */
     private static int STATE_COUNTER = 0;
     /** The name of this state. Defaults to qXX, where X is a number. */
@@ -24,6 +24,10 @@ public class State {
      */
     public State(String name) {
         this.name = name;
+    }
+
+    public static State trap() {
+        return new State("TRAP_"+ STATE_COUNTER++);
     }
 
     /**
@@ -52,5 +56,10 @@ public class State {
         return "State{" +
                 "name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(State other) {
+        return this.name.compareTo(other.name);
     }
 }

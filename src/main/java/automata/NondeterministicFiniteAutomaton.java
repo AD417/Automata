@@ -26,6 +26,27 @@ public class NondeterministicFiniteAutomaton {
         this.transitionFunction = transitionFunction;
         this.startState = startState;
         this.acceptingStates = acceptingStates;
+        validate();
+    }
+
+    public Set<State> getStates() {
+        return Collections.unmodifiableSet(states);
+    }
+
+    public Alphabet getAlphabet() {
+        return alphabet;
+    }
+
+    public Transition getTransitionFunction() {
+        return transitionFunction;
+    }
+
+    public State getStartState() {
+        return startState;
+    }
+
+    public Set<State> getAcceptingStates() {
+        return Collections.unmodifiableSet(acceptingStates);
     }
 
     private void validate() {
@@ -54,13 +75,16 @@ public class NondeterministicFiniteAutomaton {
                     .filter(Objects::nonNull)
                     .forEach(immediateNextStates::addAll);
 
-            // TODO: epsilon transitions.
             currentStates = epsilonClosure(immediateNextStates);
         }
         return acceptingStates.stream().anyMatch(currentStates::contains);
     }
 
-    private Set<State> epsilonClosure(Set<State> states) {
+    public Set<State> epsilonClosure(State state) {
+        return epsilonClosure(Set.of(state));
+    }
+
+    public Set<State> epsilonClosure(Set<State> states) {
         Queue<State> toClose = new LinkedList<>(states);
         Set<State> output = new HashSet<>(states);
         while (!toClose.isEmpty()) {

@@ -25,7 +25,7 @@ public class DeterministicTransition extends HashMap<State, HashMap<Character, S
      * @param alphabet The alphabet containing all symbols this transition
      *                 function should be able to handle.
      */
-    public void initializeFor(Set<State> states, Alphabet alphabet) {
+    public void setDefaults(Set<State> states, Alphabet alphabet) {
         for (State state : states) {
             HashMap<Character, State> stateFunction = computeIfAbsent(state, k -> new HashMap<>());
             alphabet.forEach(chr -> stateFunction.put(chr, state));
@@ -39,7 +39,7 @@ public class DeterministicTransition extends HashMap<State, HashMap<Character, S
      * @param nextState The output state for this transition rule.
      */
     public void setState(State currentState, Character chr, State nextState) {
-        getOrDefault(currentState, new HashMap<>()).put(chr, nextState);
+        computeIfAbsent(currentState, k -> new HashMap<>()).put(chr, nextState);
     }
 
     /**
