@@ -35,7 +35,8 @@ public class Transition extends HashMap<State, HashMap<Character, Set<State>>> {
     }
 
     /**
-     * Set the output of this transition function for an input state and symbol.
+     * Set the output of this transition function for an input state and
+     * symbol. This overwrites any previous transitions.
      * @param currentState The input state for this transition rule.
      * @param chr The input symbol for this transition rule.
      * @param nextStates The valid output states for this transition rule.
@@ -73,6 +74,15 @@ public class Transition extends HashMap<State, HashMap<Character, Set<State>>> {
      */
     public Set<State> getStates() {
         return Collections.unmodifiableSet(keySet());
+    }
+
+    public void addAllTo(Transition other) {
+        for (State state : keySet()) {
+            HashMap<Character, Set<State>> stateProduct = get(state);
+            for (Character symbol : stateProduct.keySet()) {
+                other.setState(state, symbol, transition(state, symbol));
+            }
+        }
     }
 
     @Override

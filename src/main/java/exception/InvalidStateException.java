@@ -6,4 +6,7 @@ package exception;
  * the same state in different ways.
  */
 public class InvalidStateException extends RuntimeException {
+    public InvalidStateException(String msg) {
+        super(msg);
+    }
 }

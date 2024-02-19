@@ -56,7 +56,7 @@ public class NondeterministicFiniteAutomaton {
             for (Character c : alphabet) {
                 Set<State> output = transitionFunction.transition(state, c);
                 if (output == null) continue;
-                Set<State> badStates = output.stream().filter(states::contains).collect(Collectors.toSet());
+                Set<State> badStates = output.stream().filter(x -> !states.contains(x)).collect(Collectors.toSet());
                 if (badStates.isEmpty()) continue;
 
                 String msg = String.format(

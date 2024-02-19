@@ -1,11 +1,10 @@
 package operations;
 
 import automata.DeterministicFiniteAutomaton;
-import components.Alphabet;
-import components.DeterministicTransition;
-import components.State;
-import components.StateCombination;
+import automata.NondeterministicFiniteAutomaton;
+import components.*;
 import exception.AlphabetException;
+import exception.InvalidStateException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -83,7 +82,12 @@ public class AutomataCombiner {
             DeterministicFiniteAutomaton dfa2
     ) {
         if (!dfa1.getAlphabet().equals(dfa2.getAlphabet())) {
-            throw new RuntimeException("Alphabet mismatch between two DFAs");
+            String msg = String.format(
+                    "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
+                    dfa1.getAlphabet(),
+                    dfa2.getAlphabet()
+            );
+            throw new AlphabetException(msg);
         }
         StateCombination combination = StateCombination.createFor(dfa1.getStates(), dfa2.getStates());
         Alphabet alphabet = dfa1.getAlphabet();
@@ -114,6 +118,54 @@ public class AutomataCombiner {
                 dtCombo,
                 startCombo,
                 acceptingCombo
+        );
+    }
+
+    public static NondeterministicFiniteAutomaton union(
+            NondeterministicFiniteAutomaton nfa1,
+            NondeterministicFiniteAutomaton nfa2
+    ) {
+        if (!nfa1.getAlphabet().equals(nfa2.getAlphabet())) {
+            String msg = String.format(
+                    "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
+                    nfa1.getAlphabet(),
+                    nfa2.getAlphabet()
+            );
+            throw new AlphabetException(msg);
+        }
+        Set<State> allStates = new HashSet<>();
+        Alphabet alphabet = nfa1.getAlphabet();
+        Transition tf = new Transition();
+        State commonStart = new State();
+        Set<State> acceptingStates = new HashSet<>();
+
+        allStates.addAll(nfa1.getStates());
+        allStates.addAll(nfa2.getStates());
+        allStates.add(commonStart);
+
+        int expectedStateSize = nfa1.getStates().size() + nfa2.getStates().size() + 1;
+        if (allStates.size() < expectedStateSize) {
+            Set<State> stateOverlap = new HashSet<>(nfa1.getStates());
+            stateOverlap.retainAll(nfa2.getStates());
+            String msg = String.format("States %s are present in both NFAs.", stateOverlap);
+            throw new InvalidStateException(msg);
+        }
+
+        tf.initializeFor(allStates, alphabet);
+        nfa1.getTransitionFunction().addAllTo(tf);
+        nfa2.getTransitionFunction().addAllTo(tf);
+        Set<State> commonStartTransitions = Set.of(nfa1.getStartState(), nfa2.getStartState());
+        tf.setState(commonStart, Alphabet.EPSILON, commonStartTransitions);
+
+        acceptingStates.addAll(nfa1.getAcceptingStates());
+        acceptingStates.addAll(nfa2.getAcceptingStates());
+
+        return new NondeterministicFiniteAutomaton(
+                allStates,
+                alphabet,
+                tf,
+                commonStart,
+                acceptingStates
         );
     }
 
