@@ -9,13 +9,8 @@ import exception.InvalidAutomatonException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class NFA {
-    private final Set<State> states;
-    private final Alphabet alphabet;
-    private final Transition transitionFunction;
-    private final State startState;
-    private final Set<State> acceptingStates;
-
+public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFunction, State startState,
+                  Set<State> acceptingStates) {
     public NFA(
             Set<State> states,
             Alphabet alphabet,
@@ -31,36 +26,41 @@ public class NFA {
         validate();
     }
 
-    public Set<State> getStates() {
+    @Override
+    public Set<State> states() {
         return Collections.unmodifiableSet(states);
     }
 
-    public Alphabet getAlphabet() {
-        return alphabet;
-    }
-
-    public Transition getTransitionFunction() {
-        return transitionFunction;
-    }
-
-    public State getStartState() {
-        return startState;
-    }
-
-    public Set<State> getAcceptingStates() {
+    @Override
+    public Set<State> acceptingStates() {
         return Collections.unmodifiableSet(acceptingStates);
     }
 
     private void validate() {
+        if (!states.contains(startState)) {
+            String msg = String.format("Invalid start state: %s is not in the state set", startState);
+            throw new InvalidAutomatonException(msg);
+        }
+        Set<State> missingStates = acceptingStates.stream().dropWhile(states::contains).collect(Collectors.toSet());
+        if (!missingStates.isEmpty()) {
+            String msg = String.format(
+                    "Invalid accepting state(s): %s are accepting states not in NFA set!",
+                    missingStates
+            );
+            throw new InvalidAutomatonException(msg);
+        }
         for (State state : states) {
             for (Character c : alphabet) {
                 Set<State> output = transitionFunction.transition(state, c);
+                // Null is acceptable, but not really preferred.
+                // TODO: Warning?
                 if (output == null) continue;
                 Set<State> badStates = output.stream().filter(x -> !states.contains(x)).collect(Collectors.toSet());
                 if (badStates.isEmpty()) continue;
 
                 String msg = String.format(
-                        "Illegal transition: states %s escape this automaton's state set", badStates
+                        "Illegal transition: Transition δ(%s, '%c') is not closed (results in unclosed states %s)",
+                        state, c, badStates
                 );
                 throw new InvalidAutomatonException(msg);
             }

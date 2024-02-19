@@ -16,40 +16,40 @@ public class AutomataCombiner {
             NFA nfa2
     ) {
         // TODO: the overuse of this alphabet guard is getting annoying.
-        if (!nfa1.getAlphabet().equals(nfa2.getAlphabet())) {
+        if (!nfa1.alphabet().equals(nfa2.alphabet())) {
             String msg = String.format(
                     "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
-                    nfa1.getAlphabet(),
-                    nfa2.getAlphabet()
+                    nfa1.alphabet(),
+                    nfa2.alphabet()
             );
             throw new AlphabetException(msg);
         }
 
         Set<State> allStates = new HashSet<>();
-        Alphabet alphabet = nfa1.getAlphabet();
+        Alphabet alphabet = nfa1.alphabet();
         Transition tf = new Transition();
-        State start = nfa1.getStartState();
-        Set<State> acceptingStates = nfa2.getAcceptingStates();
+        State start = nfa1.startState();
+        Set<State> acceptingStates = nfa2.acceptingStates();
 
-        allStates.addAll(nfa1.getStates());
-        allStates.addAll(nfa2.getStates());
+        allStates.addAll(nfa1.states());
+        allStates.addAll(nfa2.states());
 
-        int expectedStateSize = nfa1.getStates().size() + nfa2.getStates().size();
+        int expectedStateSize = nfa1.states().size() + nfa2.states().size();
         if (allStates.size() < expectedStateSize) {
-            Set<State> stateOverlap = new HashSet<>(nfa1.getStates());
-            stateOverlap.retainAll(nfa2.getStates());
+            Set<State> stateOverlap = new HashSet<>(nfa1.states());
+            stateOverlap.retainAll(nfa2.states());
             String msg = String.format("States %s are present in both NFAs.", stateOverlap);
             throw new InvalidStateException(msg);
         }
 
         tf.initializeFor(allStates, alphabet);
-        nfa1.getTransitionFunction().addAllTo(tf);
-        nfa2.getTransitionFunction().addAllTo(tf);
-        for (State firstAccept : nfa1.getAcceptingStates()) {
+        nfa1.transitionFunction().addAllTo(tf);
+        nfa2.transitionFunction().addAllTo(tf);
+        for (State firstAccept : nfa1.acceptingStates()) {
             Set<State> epsilonTransition = new HashSet<>(
                     tf.transition(firstAccept, Alphabet.EPSILON)
             );
-            epsilonTransition.add(nfa2.getStartState());
+            epsilonTransition.add(nfa2.startState());
             tf.setState(firstAccept, Alphabet.EPSILON, epsilonTransition);
         }
 
@@ -71,28 +71,28 @@ public class AutomataCombiner {
      * DFAs.
      */
     public static DFA intersection(DFA dfa1, DFA dfa2) {
-        if (!dfa1.getAlphabet().equals(dfa2.getAlphabet())) {
+        if (!dfa1.alphabet().equals(dfa2.alphabet())) {
             String msg = String.format(
                     "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
-                    dfa1.getAlphabet(),
-                    dfa2.getAlphabet()
+                    dfa1.alphabet(),
+                    dfa2.alphabet()
             );
             throw new AlphabetException(msg);
         }
-        StateCombination combination = StateCombination.createFor(dfa1.getStates(), dfa2.getStates());
-        Alphabet alphabet = dfa1.getAlphabet();
+        StateCombination combination = StateCombination.createFor(dfa1.states(), dfa2.states());
+        Alphabet alphabet = dfa1.alphabet();
         DeterministicTransition dtCombo = combineTransitions(
-                dfa1.getTransitionFunction(),
-                dfa2.getTransitionFunction(),
+                dfa1.transitionFunction(),
+                dfa2.transitionFunction(),
                 alphabet,
                 combination
         );
 
-        State startCombo = combination.getCombo(dfa1.getStartState(), dfa2.getStartState());
+        State startCombo = combination.getCombo(dfa1.startState(), dfa2.startState());
 
         Set<State> acceptingCombo = new HashSet<>();
-        for (State accept1 : dfa1.getAcceptingStates()) {
-            for (State accept2 : dfa2.getAcceptingStates()) {
+        for (State accept1 : dfa1.acceptingStates()) {
+            for (State accept2 : dfa2.acceptingStates()) {
                 acceptingCombo.add(combination.getCombo(accept1, accept2));
             }
         }
@@ -115,33 +115,33 @@ public class AutomataCombiner {
      * DFAs.
      */
     public static DFA union(DFA dfa1, DFA dfa2) {
-        if (!dfa1.getAlphabet().equals(dfa2.getAlphabet())) {
+        if (!dfa1.alphabet().equals(dfa2.alphabet())) {
             String msg = String.format(
                     "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
-                    dfa1.getAlphabet(),
-                    dfa2.getAlphabet()
+                    dfa1.alphabet(),
+                    dfa2.alphabet()
             );
             throw new AlphabetException(msg);
         }
-        StateCombination combination = StateCombination.createFor(dfa1.getStates(), dfa2.getStates());
-        Alphabet alphabet = dfa1.getAlphabet();
+        StateCombination combination = StateCombination.createFor(dfa1.states(), dfa2.states());
+        Alphabet alphabet = dfa1.alphabet();
         DeterministicTransition dtCombo = combineTransitions(
-                dfa1.getTransitionFunction(),
-                dfa2.getTransitionFunction(),
+                dfa1.transitionFunction(),
+                dfa2.transitionFunction(),
                 alphabet,
                 combination
         );
 
-        State startCombo = combination.getCombo(dfa1.getStartState(), dfa2.getStartState());
+        State startCombo = combination.getCombo(dfa1.startState(), dfa2.startState());
 
         Set<State> acceptingCombo = new HashSet<>();
-        for (State accept1 : dfa1.getAcceptingStates()) {
-            for (State accept2 : dfa2.getStates()) {
+        for (State accept1 : dfa1.acceptingStates()) {
+            for (State accept2 : dfa2.states()) {
                 acceptingCombo.add(combination.getCombo(accept1, accept2));
             }
         }
-        for (State accept2 : dfa2.getAcceptingStates()) {
-            for (State accept1 : dfa1.getStates()) {
+        for (State accept2 : dfa2.acceptingStates()) {
+            for (State accept1 : dfa1.states()) {
                 acceptingCombo.add(combination.getCombo(accept1, accept2));
             }
         }
@@ -150,40 +150,40 @@ public class AutomataCombiner {
     }
 
     public static NFA union(NFA nfa1, NFA nfa2) {
-        if (!nfa1.getAlphabet().equals(nfa2.getAlphabet())) {
+        if (!nfa1.alphabet().equals(nfa2.alphabet())) {
             String msg = String.format(
                     "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
-                    nfa1.getAlphabet(),
-                    nfa2.getAlphabet()
+                    nfa1.alphabet(),
+                    nfa2.alphabet()
             );
             throw new AlphabetException(msg);
         }
         Set<State> allStates = new HashSet<>();
-        Alphabet alphabet = nfa1.getAlphabet();
+        Alphabet alphabet = nfa1.alphabet();
         Transition tf = new Transition();
         State commonStart = new State();
         Set<State> acceptingStates = new HashSet<>();
 
-        allStates.addAll(nfa1.getStates());
-        allStates.addAll(nfa2.getStates());
+        allStates.addAll(nfa1.states());
+        allStates.addAll(nfa2.states());
         allStates.add(commonStart);
 
-        int expectedStateSize = nfa1.getStates().size() + nfa2.getStates().size() + 1;
+        int expectedStateSize = nfa1.states().size() + nfa2.states().size() + 1;
         if (allStates.size() < expectedStateSize) {
-            Set<State> stateOverlap = new HashSet<>(nfa1.getStates());
-            stateOverlap.retainAll(nfa2.getStates());
+            Set<State> stateOverlap = new HashSet<>(nfa1.states());
+            stateOverlap.retainAll(nfa2.states());
             String msg = String.format("States %s are present in both NFAs.", stateOverlap);
             throw new InvalidStateException(msg);
         }
 
         tf.initializeFor(allStates, alphabet);
-        nfa1.getTransitionFunction().addAllTo(tf);
-        nfa2.getTransitionFunction().addAllTo(tf);
-        Set<State> commonStartTransitions = Set.of(nfa1.getStartState(), nfa2.getStartState());
+        nfa1.transitionFunction().addAllTo(tf);
+        nfa2.transitionFunction().addAllTo(tf);
+        Set<State> commonStartTransitions = Set.of(nfa1.startState(), nfa2.startState());
         tf.setState(commonStart, Alphabet.EPSILON, commonStartTransitions);
 
-        acceptingStates.addAll(nfa1.getAcceptingStates());
-        acceptingStates.addAll(nfa2.getAcceptingStates());
+        acceptingStates.addAll(nfa1.acceptingStates());
+        acceptingStates.addAll(nfa2.acceptingStates());
 
         return new NFA(allStates, alphabet, tf, commonStart, acceptingStates);
     }

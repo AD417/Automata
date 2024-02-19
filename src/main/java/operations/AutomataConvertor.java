@@ -24,13 +24,13 @@ public class AutomataConvertor {
      * accepted by the DFA will be accepted by this NFA.
      */
     public static NFA DFAtoNFA(DFA dfa) {
-        Set<State> nfaStates = dfa.getStates();
-        Alphabet alphabet = dfa .getAlphabet();
+        Set<State> nfaStates = dfa.states();
+        Alphabet alphabet = dfa .alphabet();
         Transition tf = new Transition();
-        State startState = dfa.getStartState();
-        Set<State> acceptingStates = dfa.getAcceptingStates();
+        State startState = dfa.startState();
+        Set<State> acceptingStates = dfa.acceptingStates();
 
-        DeterministicTransition dt = dfa.getTransitionFunction();
+        DeterministicTransition dt = dfa.transitionFunction();
 
         tf.initializeFor(nfaStates, alphabet);
         for (State state : nfaStates) {
@@ -60,12 +60,12 @@ public class AutomataConvertor {
      */
     public static DFA NFAtoDFA(NFA nfa) {
         Set<State> dfaStates = new HashSet<>();
-        Alphabet alphabet = nfa.getAlphabet();
+        Alphabet alphabet = nfa.alphabet();
         DeterministicTransition dt = new DeterministicTransition();
         State startState;
         Set<State> acceptingStates = new HashSet<>();
 
-        Set<State> nfaStartClosure = nfa.epsilonClosure(nfa.getStartState());
+        Set<State> nfaStartClosure = nfa.epsilonClosure(nfa.startState());
         startState = subsetState(nfaStartClosure);
         if (wouldBeAccepted(nfa, nfaStartClosure)) {
             acceptingStates.add(startState);
@@ -139,7 +139,7 @@ public class AutomataConvertor {
     ) {
         Set<State> reachable = new HashSet<>();
         states.stream()
-                .map(state -> nfa.getTransitionFunction().transition(state, symbol))
+                .map(state -> nfa.transitionFunction().transition(state, symbol))
                 .map(nfa::epsilonClosure)
                 .forEach(reachable::addAll);
 
@@ -156,6 +156,6 @@ public class AutomataConvertor {
      * @return whether any of the states would be accepted.
      */
     private static boolean wouldBeAccepted(NFA nfa, Set<State> states) {
-        return nfa.getAcceptingStates().stream().anyMatch(states::contains);
+        return nfa.acceptingStates().stream().anyMatch(states::contains);
     }
 }
