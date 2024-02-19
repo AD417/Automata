@@ -10,6 +10,58 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AutomataCombiner {
+
+    public static NondeterministicFiniteAutomaton concatenate(
+            NondeterministicFiniteAutomaton nfa1,
+            NondeterministicFiniteAutomaton nfa2
+    ) {
+        // TODO: the overuse of this alphabet guard is getting annoying.
+        if (!nfa1.getAlphabet().equals(nfa2.getAlphabet())) {
+            String msg = String.format(
+                    "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
+                    nfa1.getAlphabet(),
+                    nfa2.getAlphabet()
+            );
+            throw new AlphabetException(msg);
+        }
+
+        Set<State> allStates = new HashSet<>();
+        Alphabet alphabet = nfa1.getAlphabet();
+        Transition tf = new Transition();
+        State start = nfa1.getStartState();
+        Set<State> acceptingStates = nfa2.getAcceptingStates();
+
+        allStates.addAll(nfa1.getStates());
+        allStates.addAll(nfa2.getStates());
+
+        int expectedStateSize = nfa1.getStates().size() + nfa2.getStates().size();
+        if (allStates.size() < expectedStateSize) {
+            Set<State> stateOverlap = new HashSet<>(nfa1.getStates());
+            stateOverlap.retainAll(nfa2.getStates());
+            String msg = String.format("States %s are present in both NFAs.", stateOverlap);
+            throw new InvalidStateException(msg);
+        }
+
+        tf.initializeFor(allStates, alphabet);
+        nfa1.getTransitionFunction().addAllTo(tf);
+        nfa2.getTransitionFunction().addAllTo(tf);
+        for (State firstAccept : nfa1.getAcceptingStates()) {
+            Set<State> epsilonTransition = new HashSet<>(
+                    tf.transition(firstAccept, Alphabet.EPSILON)
+            );
+            epsilonTransition.add(nfa2.getStartState());
+            tf.setState(firstAccept, Alphabet.EPSILON, epsilonTransition);
+        }
+
+        return new NondeterministicFiniteAutomaton(
+                allStates,
+                alphabet,
+                tf,
+                start,
+                acceptingStates
+        );
+    }
+
     /**
      * Create an automaton that results from the intersection of the two
      * languages defined by DFAs.

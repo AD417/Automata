@@ -56,7 +56,7 @@ public class Main {
                 Set.of(r3)
         );
 
-        NondeterministicFiniteAutomaton nfaCombo = AutomataCombiner.union(nfa1, nfa2);
+        NondeterministicFiniteAutomaton nfaCombo = AutomataCombiner.concatenate(nfa1, nfa2);
 
         System.out.println(nfa1);
         System.out.println();
@@ -65,7 +65,7 @@ public class Main {
         System.out.println(nfaCombo);
         System.out.println();
 
-        for (String s : new String[]{"bab", "bababab", "bbbbbbbbbbbabbbbbb", "aab"}) {
+        for (String s : new String[]{"babaaa", "bababababab", "aaabbbbbbbbbbbabbbbbb", "aaaab"}) {
             System.out.println(nfa1.accepts(s));
             System.out.println(nfa2.accepts(s));
             System.out.println(nfaCombo.accepts(s));
