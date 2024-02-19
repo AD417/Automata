@@ -1,5 +1,7 @@
-package automata;
+package operations;
 
+import automata.DeterministicFiniteAutomaton;
+import automata.NondeterministicFiniteAutomaton;
 import components.Alphabet;
 import components.DeterministicTransition;
 import components.State;

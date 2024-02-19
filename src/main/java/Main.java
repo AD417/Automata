@@ -1,4 +1,4 @@
-import automata.AutomataConvertor;
+import operations.AutomataConvertor;
 import automata.DeterministicFiniteAutomaton;
 import automata.NondeterministicFiniteAutomaton;
 import components.*;

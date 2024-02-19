@@ -5,5 +5,5 @@ package exception;
  * Usually occurs when combining multiple automata that happen to reference
  * the same state in different ways.
  */
-public class InvalidStateException {
+public class InvalidStateException extends RuntimeException {
 }
