@@ -1,9 +1,10 @@
 package automata;
 
 import components.Alphabet;
-import components.AutomatonCrashException;
 import components.DeterministicTransition;
 import components.State;
+import exception.AlphabetException;
+import exception.InvalidAutomatonException;
 
 import java.util.Set;
 
@@ -53,7 +54,12 @@ public class DeterministicFiniteAutomaton {
         for (State state : states) {
             for (Character c : alphabet) {
                 if (transitionFunction.transition(state, c) == null) {
-                    throw new AutomatonCrashException("Invalid DFA detected", "");
+                    String msg = String.format(
+                            "Illegal transition: Transition δ(%s, '%c') is undefined",
+                            state,
+                            c
+                    );
+                    throw new InvalidAutomatonException(msg);
                 }
             }
         }
@@ -63,11 +69,26 @@ public class DeterministicFiniteAutomaton {
         State state = startState;
         for (Character c : string.toCharArray()) {
             if (!alphabet.contains(c)) {
-                throw new AutomatonCrashException("Parsed string contains character not in alphabet!", string);
+                String msg = String.format(
+                        "String '%s' contains symbol '%c' not in Automaton's alphabet.",
+                        string, c
+                );
+                throw new AlphabetException(msg);
             }
-            state = transitionFunction.transition(state, c);
-            if (state == null) {
-                throw new AutomatonCrashException("State transition failure", string);
+            State nextState = transitionFunction.transition(state, c);
+            if (nextState == null) {
+                String msg = String.format(
+                        "Illegal transition: Transition δ(%s, %c) is undefined!",
+                        state, c
+                );
+                throw new InvalidAutomatonException(msg);
+            }
+            if (!states.contains(nextState)) {
+                String msg = String.format(
+                        "Illegal transition: Transition δ(%s, %c) does not map to state set!",
+                        state, c
+                );
+                throw new InvalidAutomatonException(msg);
             }
         }
         return acceptingStates.contains(state);

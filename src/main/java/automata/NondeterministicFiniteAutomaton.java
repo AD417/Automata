@@ -1,11 +1,13 @@
 package automata;
 
 import components.Alphabet;
-import components.AutomatonCrashException;
 import components.State;
 import components.Transition;
+import exception.AlphabetException;
+import exception.InvalidAutomatonException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class NondeterministicFiniteAutomaton {
     private final Set<State> states;
@@ -54,8 +56,13 @@ public class NondeterministicFiniteAutomaton {
             for (Character c : alphabet) {
                 Set<State> output = transitionFunction.transition(state, c);
                 if (output == null) continue;
-                boolean valid = states.containsAll(output);
-                if (!valid) throw new AutomatonCrashException("Invalid NFA detected", "");
+                Set<State> badStates = output.stream().filter(states::contains).collect(Collectors.toSet());
+                if (badStates.isEmpty()) continue;
+
+                String msg = String.format(
+                        "Illegal transition: states %s escape this automaton's state set", badStates
+                );
+                throw new InvalidAutomatonException(msg);
             }
         }
     }
@@ -67,7 +74,8 @@ public class NondeterministicFiniteAutomaton {
 
         for (Character c : string.toCharArray()) {
             if (!alphabet.contains(c)) {
-                throw new AutomatonCrashException("Parsed string contains a character not in alphabet!", string);
+                String msg = String.format("String '%s' contains symbol '%c' not in Automaton's alphabet.", string, c);
+                throw new AlphabetException(msg);
             }
             Set<State> immediateNextStates = new HashSet<>();
             currentStates.stream()

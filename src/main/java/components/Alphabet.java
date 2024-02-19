@@ -1,5 +1,7 @@
 package components;
 
+import exception.AlphabetException;
+
 import java.util.HashSet;
 
 /**
@@ -49,7 +51,7 @@ public class Alphabet extends HashSet<Character> {
      */
     public static Alphabet withSymbols(String symbols) {
         if (symbols.isEmpty()) {
-            throw new AutomatonCrashException("Invalid Alphabet: must contain at least 1 symbol", symbols);
+            throw new AlphabetException("Alphabet must contain at least 1 symbol");
         }
         Alphabet output = new Alphabet();
         for (Character c : symbols.toCharArray()) {
