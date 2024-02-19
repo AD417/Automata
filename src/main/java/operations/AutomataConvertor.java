@@ -1,7 +1,7 @@
 package operations;
 
-import automata.DeterministicFiniteAutomaton;
-import automata.NondeterministicFiniteAutomaton;
+import automata.DFA;
+import automata.NFA;
 import components.Alphabet;
 import components.DeterministicTransition;
 import components.State;
@@ -23,7 +23,7 @@ public class AutomataConvertor {
      * @return a Nondeterministic equivalent of the provided DFA. Any string
      * accepted by the DFA will be accepted by this NFA.
      */
-    public static NondeterministicFiniteAutomaton DFAtoNFA(DeterministicFiniteAutomaton dfa) {
+    public static NFA DFAtoNFA(DFA dfa) {
         Set<State> nfaStates = dfa.getStates();
         Alphabet alphabet = dfa .getAlphabet();
         Transition tf = new Transition();
@@ -39,7 +39,7 @@ public class AutomataConvertor {
             }
         }
 
-        return new NondeterministicFiniteAutomaton(
+        return new NFA(
                 nfaStates,
                 alphabet,
                 tf,
@@ -58,7 +58,7 @@ public class AutomataConvertor {
      * @return a Deterministic equivalent of the provided NFA. Any string
      * accepted by the NFA will be accepted by this DFA.
      */
-    public static DeterministicFiniteAutomaton NFAtoDFA(NondeterministicFiniteAutomaton nfa) {
+    public static DFA NFAtoDFA(NFA nfa) {
         Set<State> dfaStates = new HashSet<>();
         Alphabet alphabet = nfa.getAlphabet();
         DeterministicTransition dt = new DeterministicTransition();
@@ -95,7 +95,7 @@ public class AutomataConvertor {
             }
         }
 
-        return new DeterministicFiniteAutomaton(
+        return new DFA(
                 dfaStates,
                 alphabet,
                 dt,
@@ -133,7 +133,7 @@ public class AutomataConvertor {
      * input states.
      */
     private static Set<State> findAllOutcomes(
-            NondeterministicFiniteAutomaton nfa,
+            NFA nfa,
             Set<State> states,
             Character symbol
     ) {
@@ -155,7 +155,7 @@ public class AutomataConvertor {
      *               states.
      * @return whether any of the states would be accepted.
      */
-    private static boolean wouldBeAccepted(NondeterministicFiniteAutomaton nfa, Set<State> states) {
+    private static boolean wouldBeAccepted(NFA nfa, Set<State> states) {
         return nfa.getAcceptingStates().stream().anyMatch(states::contains);
     }
 }

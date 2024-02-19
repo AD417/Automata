@@ -9,14 +9,14 @@ import exception.InvalidAutomatonException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class NondeterministicFiniteAutomaton {
+public class NFA {
     private final Set<State> states;
     private final Alphabet alphabet;
     private final Transition transitionFunction;
     private final State startState;
     private final Set<State> acceptingStates;
 
-    public NondeterministicFiniteAutomaton(
+    public NFA(
             Set<State> states,
             Alphabet alphabet,
             Transition transitionFunction,

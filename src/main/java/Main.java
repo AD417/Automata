@@ -1,7 +1,6 @@
 import operations.AutomataCombiner;
 import operations.AutomataConvertor;
-import automata.DeterministicFiniteAutomaton;
-import automata.NondeterministicFiniteAutomaton;
+import automata.NFA;
 import components.*;
 
 import java.util.Set;
@@ -21,13 +20,7 @@ public class Main {
         tf.setState(q0, 'a', q1);
         tf.setState(q1, 'b', q1);
 
-        NondeterministicFiniteAutomaton nfa1 = new NondeterministicFiniteAutomaton(
-                states,
-                alphabet,
-                tf,
-                q0,
-                Set.of(q1)
-        );
+        NFA nfa1 = new NFA(states, alphabet, tf, q0, Set.of(q1));
 
         State r0 = new State("r0");
         State r1 = new State("r1");
@@ -48,15 +41,9 @@ public class Main {
         tf.setState(r2, 'b', r2);
         tf.setState(r3, 'b', r3);
 
-        NondeterministicFiniteAutomaton nfa2 = new NondeterministicFiniteAutomaton(
-                states,
-                alphabet,
-                tf,
-                r0,
-                Set.of(r3)
-        );
+        NFA nfa2 = new NFA(states, alphabet, tf, r0, Set.of(r3));
 
-        NondeterministicFiniteAutomaton nfaCombo = AutomataCombiner.concatenate(nfa1, nfa2);
+        NFA nfaCombo = AutomataCombiner.concatenate(nfa1, nfa2);
 
         System.out.println(nfa1);
         System.out.println();
@@ -64,12 +51,6 @@ public class Main {
         System.out.println();
         System.out.println(nfaCombo);
         System.out.println();
-
-        for (String s : new String[]{"babaaa", "bababababab", "aaabbbbbbbbbbbabbbbbb", "aaaab"}) {
-            System.out.println(nfa1.accepts(s));
-            System.out.println(nfa2.accepts(s));
-            System.out.println(nfaCombo.accepts(s));
-            System.out.println();
-        }
+        System.out.println(AutomataConvertor.NFAtoDFA(nfaCombo));
     }
 }

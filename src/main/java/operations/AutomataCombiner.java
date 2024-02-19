@@ -1,7 +1,7 @@
 package operations;
 
-import automata.DeterministicFiniteAutomaton;
-import automata.NondeterministicFiniteAutomaton;
+import automata.DFA;
+import automata.NFA;
 import components.*;
 import exception.AlphabetException;
 import exception.InvalidStateException;
@@ -11,9 +11,9 @@ import java.util.Set;
 
 public class AutomataCombiner {
 
-    public static NondeterministicFiniteAutomaton concatenate(
-            NondeterministicFiniteAutomaton nfa1,
-            NondeterministicFiniteAutomaton nfa2
+    public static NFA concatenate(
+            NFA nfa1,
+            NFA nfa2
     ) {
         // TODO: the overuse of this alphabet guard is getting annoying.
         if (!nfa1.getAlphabet().equals(nfa2.getAlphabet())) {
@@ -53,13 +53,7 @@ public class AutomataCombiner {
             tf.setState(firstAccept, Alphabet.EPSILON, epsilonTransition);
         }
 
-        return new NondeterministicFiniteAutomaton(
-                allStates,
-                alphabet,
-                tf,
-                start,
-                acceptingStates
-        );
+        return new NFA(allStates, alphabet, tf, start, acceptingStates);
     }
 
     /**
@@ -76,10 +70,7 @@ public class AutomataCombiner {
      * @return a DFA that accepts only strings that would be accepted by both
      * DFAs.
      */
-    public static DeterministicFiniteAutomaton intersection(
-            DeterministicFiniteAutomaton dfa1,
-            DeterministicFiniteAutomaton dfa2
-    ) {
+    public static DFA intersection(DFA dfa1, DFA dfa2) {
         if (!dfa1.getAlphabet().equals(dfa2.getAlphabet())) {
             String msg = String.format(
                     "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
@@ -106,13 +97,7 @@ public class AutomataCombiner {
             }
         }
 
-        return new DeterministicFiniteAutomaton(
-                combination.getAllStates(),
-                alphabet,
-                dtCombo,
-                startCombo,
-                acceptingCombo
-        );
+        return new DFA(combination.getAllStates(), alphabet, dtCombo, startCombo, acceptingCombo);
     }
 
     /**
@@ -129,10 +114,7 @@ public class AutomataCombiner {
      * @return a DFA that accepts only strings that would be accepted by either
      * DFAs.
      */
-    public static DeterministicFiniteAutomaton union(
-            DeterministicFiniteAutomaton dfa1,
-            DeterministicFiniteAutomaton dfa2
-    ) {
+    public static DFA union(DFA dfa1, DFA dfa2) {
         if (!dfa1.getAlphabet().equals(dfa2.getAlphabet())) {
             String msg = String.format(
                     "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
@@ -164,19 +146,10 @@ public class AutomataCombiner {
             }
         }
 
-        return new DeterministicFiniteAutomaton(
-                combination.getAllStates(),
-                alphabet,
-                dtCombo,
-                startCombo,
-                acceptingCombo
-        );
+        return new DFA(combination.getAllStates(), alphabet, dtCombo, startCombo, acceptingCombo);
     }
 
-    public static NondeterministicFiniteAutomaton union(
-            NondeterministicFiniteAutomaton nfa1,
-            NondeterministicFiniteAutomaton nfa2
-    ) {
+    public static NFA union(NFA nfa1, NFA nfa2) {
         if (!nfa1.getAlphabet().equals(nfa2.getAlphabet())) {
             String msg = String.format(
                     "Alphabet mismatch: DFAs' alphabets (%s and %s) are incompatible.",
@@ -212,13 +185,7 @@ public class AutomataCombiner {
         acceptingStates.addAll(nfa1.getAcceptingStates());
         acceptingStates.addAll(nfa2.getAcceptingStates());
 
-        return new NondeterministicFiniteAutomaton(
-                allStates,
-                alphabet,
-                tf,
-                commonStart,
-                acceptingStates
-        );
+        return new NFA(allStates, alphabet, tf, commonStart, acceptingStates);
     }
 
     /**

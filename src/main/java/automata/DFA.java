@@ -8,14 +8,19 @@ import exception.InvalidAutomatonException;
 
 import java.util.Set;
 
-public class DeterministicFiniteAutomaton {
+/**
+ * Deterministic Finite Automaton. At all times, for all states, there is
+ * exactly one transition, and one path from the starting point to some
+ * accepting state.
+ */
+public class DFA {
     private final Set<State> states;
     private final Alphabet alphabet;
     private final DeterministicTransition transitionFunction;
     private final State startState;
     private final Set<State> acceptingStates;
 
-    public DeterministicFiniteAutomaton(
+    public DFA(
             Set<State> states,
             Alphabet alphabet,
             DeterministicTransition transitionFunction,
