@@ -148,7 +148,7 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
      * Create a clone of this NFA, with redundant states removed.
      * Redundant states are defined as any states that only serves to provide
      * epsilon transitions to other states. This definition excludes states
-     * that serve as an initial or final state. 
+     * that serve as an initial or final state.
      * @return a clone of this NFA with any states that have only epsilon
      * transitions removed.
      */
