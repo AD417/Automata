@@ -144,6 +144,64 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
         return new NFA(newStates, alphabet, transition, newStart, newAccept);
     }
 
+    /**
+     * Create a clone of this NFA, with redundant states removed.
+     * Redundant states are defined as any states that only serves to provide
+     * epsilon transitions to other states. This definition excludes states
+     * that serve as an initial or final state. 
+     * @return a clone of this NFA with any states that have only epsilon
+     * transitions removed.
+     */
+    public NFA simplifyEpsilon() {
+        HashMap<State, Set<State>> redundantEpsilons = new HashMap<>();
+        Set<State> kept = new HashSet<>();
+        for (State state : states) {
+            // Starting and accepting states that are only epsilon transitions usually serve
+            if (state.equals(startState) || acceptingStates.contains(state)) {
+                kept.add(state);
+                continue;
+            }
+            boolean isRedundant = true;
+            for (Character symbol : alphabet) {
+                Set<State> result = transitionFunction.transition(state, symbol);
+                if (Objects.isNull(result) || result.isEmpty()) continue;
+                isRedundant = false;
+                break;
+            }
+            Set<State> epsilonResult = epsilonClosure(state);
+            // Trap states, which would have no outputs (including epsilons), are ignored.
+            if (!isRedundant || epsilonResult.isEmpty()) {
+                kept.add(state);
+                continue;
+            }
+
+            redundantEpsilons.put(state, epsilonResult);
+        }
+
+        // Remove chains: if A -> B -> C -> D, simplify to A -> D
+        for (Set<State> redundant : redundantEpsilons.values()) {
+            redundant.removeAll(redundantEpsilons.keySet());
+        }
+
+        Transition tf = new Transition();
+        tf.initializeFor(kept, alphabet);
+
+        for (State state : kept) {
+            for (Character symbol : alphabet) {
+                Set<State> result = new HashSet<>(transitionFunction.transition(state, symbol));
+                Set<State> redundant = result.stream()
+                        .filter(redundantEpsilons::containsKey)
+                        .collect(Collectors.toSet());
+
+                result.removeAll(redundant);
+                redundant.forEach(toFix -> result.addAll(redundantEpsilons.get(toFix)));
+
+                tf.setState(state, symbol, result);
+            }
+        }
+        return new NFA(kept, alphabet, tf, startState, acceptingStates);
+    }
+
     @Override
     public String toString() {
         return "NFA N = (Q, Σ, δ, q0, F), where:\n" +

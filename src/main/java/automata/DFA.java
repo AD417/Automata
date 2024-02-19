@@ -111,7 +111,6 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
                 .forEach(x -> stateMap.put(x.getKey(), x.getValue()));
 
         Set<State> newStates = new HashSet<>(stateMap.values());
-        Alphabet newAlphabet = alphabet;
         DeterministicTransition transition = new DeterministicTransition();
         State newStart = stateMap.get(startState);
         Set<State> newAccept = acceptingStates.stream().map(stateMap::get).collect(Collectors.toSet());
@@ -126,7 +125,7 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
             }
         }
 
-        return new DFA(newStates, newAlphabet, transition, newStart, newAccept);
+        return new DFA(newStates, alphabet, transition, newStart, newAccept);
     }
 
     @Override
