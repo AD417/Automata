@@ -51,6 +51,6 @@ public class Main {
         System.out.println();
         System.out.println(nfaCombo);
         System.out.println();
-        System.out.println(AutomataConvertor.NFAtoDFA(nfaCombo));
+        System.out.println(nfaCombo.cloneReplaceStates());
     }
 }

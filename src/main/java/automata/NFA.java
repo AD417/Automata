@@ -1,6 +1,7 @@
 package automata;
 
 import components.Alphabet;
+import components.DeterministicTransition;
 import components.State;
 import components.Transition;
 import exception.AlphabetException;
@@ -104,6 +105,43 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
             }
         }
         return output;
+    }
+
+    /**
+     * Create a clone of this NFA, with every single state renamed to
+     * something else.
+     * This is a workaround for combining a NFA with itself. Under most
+     * circumstances (NFA U NFA), this is pointless, but with concatenation
+     * this is something reasonable.
+     * @return a copy of this NFA with an otherwise identical state diagram,
+     * but all the states are renamed.
+     */
+    public NFA cloneReplaceStates() {
+        HashMap<State, State> stateMap = new HashMap<>();
+        states.stream()
+                .map(state -> Map.entry(state, new State()))
+                .forEach(x -> stateMap.put(x.getKey(), x.getValue()));
+
+        Set<State> newStates = new HashSet<>(stateMap.values());
+        Transition transition = new Transition();
+        State newStart = stateMap.get(startState);
+        Set<State> newAccept = acceptingStates.stream().map(stateMap::get).collect(Collectors.toSet());
+
+        transition.initializeFor(newStates, alphabet);
+        for (State state : states) {
+            for (Character symbol : alphabet) {
+                Set<State> newResult = transitionFunction.transition(state, symbol).stream()
+                        .map(stateMap::get)
+                        .collect(Collectors.toSet());
+                transition.setState(stateMap.get(state), symbol, newResult);
+            }
+            Set<State> newResult = transitionFunction.transition(state, Alphabet.EPSILON).stream()
+                    .map(stateMap::get)
+                    .collect(Collectors.toSet());
+            transition.setState(stateMap.get(state), Alphabet.EPSILON, newResult);
+        }
+
+        return new NFA(newStates, alphabet, transition, newStart, newAccept);
     }
 
     @Override

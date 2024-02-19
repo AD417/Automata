@@ -88,7 +88,7 @@ public class Transition extends HashMap<State, HashMap<Character, Set<State>>> {
     @Override
     public String toString() {
 
-        if (size() == 0) return "{EMPTY}";
+        if (size() == 0) return "{EMPTY}\n";
         Set<State> states = getStates();
         Set<Character> alphabet = get(states.stream().findFirst().orElseThrow()).keySet();
 

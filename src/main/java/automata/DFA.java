@@ -6,7 +6,7 @@ import components.State;
 import exception.AlphabetException;
 import exception.InvalidAutomatonException;
 
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -93,6 +93,40 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
             }
         }
         return acceptingStates.contains(state);
+    }
+
+    /**
+     * Create a clone of this DFA, with every single state renamed to
+     * something else.
+     * This is a workaround for combining a DFA with itself. Under most
+     * circumstances (DFA U DFA), this is pointless, but with concatenation
+     * this is something reasonable.
+     * @return a copy of this DFA with an otherwise identical state diagram,
+     * but all the states are renamed.
+     */
+    public DFA cloneReplaceStates() {
+        HashMap<State, State> stateMap = new HashMap<>();
+        states.stream()
+                .map(state -> Map.entry(state, new State()))
+                .forEach(x -> stateMap.put(x.getKey(), x.getValue()));
+
+        Set<State> newStates = new HashSet<>(stateMap.values());
+        Alphabet newAlphabet = alphabet;
+        DeterministicTransition transition = new DeterministicTransition();
+        State newStart = stateMap.get(startState);
+        Set<State> newAccept = acceptingStates.stream().map(stateMap::get).collect(Collectors.toSet());
+
+        for (State state : states) {
+            for (Character symbol : alphabet) {
+                transition.setState(
+                        stateMap.get(state),
+                        symbol,
+                        stateMap.get(transitionFunction.transition(state, symbol))
+                );
+            }
+        }
+
+        return new DFA(newStates, newAlphabet, transition, newStart, newAccept);
     }
 
     @Override
