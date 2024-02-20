@@ -10,4 +10,9 @@ public record KleeneToken(Token baseToken) implements Token {
     public NFA convertToNFA(Alphabet alphabet) {
         return AutomataCombiner.kleeneStar(baseToken.convertToNFA(alphabet));
     }
+
+    @Override
+    public String toString() {
+        return "Star[" + baseToken + "]";
+    }
 }

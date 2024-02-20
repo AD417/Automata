@@ -14,4 +14,9 @@ public record GroupToken(List<Token> subTokens) implements Token {
                 .reduce(AutomataCombiner::concatenate)
                 .orElse(new EmptyToken().convertToNFA(alphabet));
     }
+
+    @Override
+    public String toString() {
+        return "Group" + subTokens;
+    }
 }

@@ -18,4 +18,9 @@ public record EmptyToken() implements Token {
 
         return new NFA(states, alphabet, tf, state, states);
     }
+
+    @Override
+    public String toString() {
+        return "'Ɛ'";
+    }
 }

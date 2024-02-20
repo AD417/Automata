@@ -29,4 +29,9 @@ public record CharacterToken(char symbol) implements Token {
 
         return new NFA(states, alphabet, tf, initial, Set.of(accepting));
     }
+
+    @Override
+    public String toString() {
+        return "'"+symbol+"'";
+    }
 }
