@@ -10,7 +10,7 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
         Alphabet alphabet = Alphabet.withSymbols("ab");
-        NFA n = AutomataBuilder.parseExpression("[ab]*ab", alphabet);
+        NFA n = AutomataBuilder.parseExpression("[ab]*ab", alphabet, false);
         System.out.println(n);
     }
 }

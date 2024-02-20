@@ -14,11 +14,17 @@ import java.util.Set;
 
 public class AutomataBuilder {
     public static NFA parseExpression(String expression, Alphabet alphabet) {
-        return recursiveParse(expression).stream()
+        return parseExpression(expression, alphabet, true);
+    }
+
+    public static NFA parseExpression(String expression, Alphabet alphabet, boolean simplify) {
+        NFA result = recursiveParse(expression).stream()
                 .map(x -> x.convertToNFA(alphabet))
                 .reduce(AutomataCombiner::concatenate)
-                .orElse(new EmptyToken().convertToNFA(alphabet))
-                .simplifyEpsilon();
+                .orElse(new EmptyToken().convertToNFA(alphabet));
+
+        if (simplify) return  result.simplifyEpsilon();
+        return result;
     }
 
     public static List<Token> recursiveParse(String expression) {
