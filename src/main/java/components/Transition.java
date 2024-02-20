@@ -24,7 +24,7 @@ public class Transition extends HashMap<State, HashMap<Character, Set<State>>> {
      *                 function should be able to handle.
      */
     public void initializeFor(Set<State> states, Alphabet alphabet) {
-        Set<State> DEFAULT = new HashSet<>();
+        Set<State> DEFAULT = Collections.unmodifiableSet(new HashSet<>());
         for (State state : states) {
             HashMap<Character, Set<State>> transitionMap = computeIfAbsent(state, k -> new HashMap<>());
             for (Character c : alphabet) {
@@ -53,7 +53,7 @@ public class Transition extends HashMap<State, HashMap<Character, Set<State>>> {
      * @param nextStates The valid output states for this transition rule.
      */
     public void setState(State currentState, Character chr, Set<State> nextStates) {
-        getOrDefault(currentState, new HashMap<>()).put(chr, nextStates);
+        computeIfAbsent(currentState, k -> new HashMap<>()).put(chr, nextStates);
     }
 
     /**

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AutomataBuilder {
     // TODO: literally should be a class.
@@ -38,7 +39,11 @@ public class AutomataBuilder {
                 }
                 case '(' -> {
                     int first = ++i;
-                    while (expression.charAt(i) != ')') i++;
+                    for (int layers = 1; layers > 0; i++) {
+                        if (expression.charAt(i) == '(') layers++;
+                        if (expression.charAt(i) == ')') layers--;
+                    }
+                    i--;
                     List<Token> groupTokens = recursiveParse(expression.substring(first, i));
                     tokens.add(new GroupToken(groupTokens));
                 }

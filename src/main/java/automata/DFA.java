@@ -91,6 +91,7 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
                 );
                 throw new InvalidAutomatonException(msg);
             }
+            state = nextState;
         }
         return acceptingStates.contains(state);
     }

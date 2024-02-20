@@ -134,7 +134,7 @@ public class AutomataCombiner {
         tf.setState(start, Alphabet.EPSILON, nfa.startState());
 
         for (State lastState : nfa.acceptingStates()) {
-            Set<State> lastEpsilon = tf.transition(lastState, Alphabet.EPSILON);
+            Set<State> lastEpsilon = new HashSet<>(tf.transition(lastState, Alphabet.EPSILON));
             lastEpsilon.add(start);
             tf.setState(lastState, Alphabet.EPSILON, lastEpsilon);
         }
