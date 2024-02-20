@@ -179,15 +179,25 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
         }
 
         // Remove chains: if A -> B -> C -> D, simplify to A -> D
-        for (Set<State> redundant : redundantEpsilons.values()) {
-            redundant.removeAll(redundantEpsilons.keySet());
+        System.out.println(redundantEpsilons);
+        for (Set<State> redundantOut : redundantEpsilons.values()) {
+            for (State redundantIn : redundantEpsilons.keySet()) {
+                if (redundantOut.contains(redundantIn)) {
+                    redundantOut.addAll(redundantEpsilons.get(redundantIn));
+                }
+            }
+            redundantOut.removeAll(redundantEpsilons.keySet());
         }
+        System.out.println(redundantEpsilons);
 
         Transition tf = new Transition();
         tf.initializeFor(kept, alphabet);
 
+        Set<Character> trueAlphabet = new HashSet<>(alphabet);
+        // Start state can still have epsilons!
+        trueAlphabet.add(Alphabet.EPSILON);
         for (State state : kept) {
-            for (Character symbol : alphabet) {
+            for (Character symbol : trueAlphabet) {
                 Set<State> result = new HashSet<>(transitionFunction.transition(state, symbol));
                 Set<State> redundant = result.stream()
                         .filter(redundantEpsilons::containsKey)
