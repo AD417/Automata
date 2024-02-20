@@ -26,9 +26,18 @@ public class AutomataBuilder {
         List<Token> unions = new LinkedList<>();
         for (int i = 0; i < expression.length(); i++) {
             switch (expression.charAt(i)) {
+                case '.' -> tokens.add(new AlphabetToken());
                 case '*' -> {
                     Token token = tokens.remove(tokens.size() - 1);
                     tokens.add(new KleeneToken(token));
+                }
+                case '+' -> {
+                    Token token = tokens.remove(tokens.size() - 1);
+                    tokens.add(new PlusToken(token));
+                }
+                case '?' -> {
+                    Token token = tokens.remove(tokens.size() - 1);
+                    tokens.add(new OptionalToken(token));
                 }
                 case '[' -> {
                     int first = ++i;
