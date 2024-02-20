@@ -16,50 +16,11 @@ import java.util.Set;
 public class AutomataBuilder {
     // TODO: literally should be a class.
     public static NFA parseExpression(String expression, Alphabet alphabet) {
-        boolean brackets = false;
-        int lastPoint = 0;
-        NFA result = forEmpty(alphabet);
-        NFA last = forEmpty(alphabet);
-
-        for (int i = 0; i < expression.length(); i++) {
-            // System.out.println(expression.charAt(i));
-            if (brackets) {
-                if (expression.charAt(i) == ']') {
-                    brackets = false;
-                    String symbols = expression.substring(lastPoint, i);
-                    lastPoint = i+1;
-
-                    result = AutomataCombiner.concatenate(result, last);
-                    last = forAnySymbol(symbols, alphabet);
-                }
-            } else {
-                if (expression.charAt(i) == '[') {
-                    brackets = true;
-                    String literal = expression.substring(lastPoint, i);
-                    lastPoint = i+1;
-
-                    result = AutomataCombiner.concatenate(result, last);
-                    last = forLiteral(literal, alphabet);
-                }
-                if (expression.charAt(i) == '*') {
-                    if (lastPoint == i) {
-                        last = AutomataCombiner.kleeneStar(last);
-                    } else {
-                        throw new ParserException("NOT IMPLEMENTED!");
-                    }
-                    lastPoint = i+1;
-                }
-            }
-        }
-        if (brackets) {
-            String msg = String.format("Missing close bracket in expression '%s'", expression);
-            throw new ParserException(msg);
-        }
-
-        String literal = expression.substring(lastPoint);
-        result = AutomataCombiner.concatenate(result, last);
-        result = AutomataCombiner.concatenate(result, forLiteral(literal, alphabet));
-        return result;//.simplifyEpsilon();
+        return recursiveParse(expression).stream()
+                .map(x -> x.convertToNFA(alphabet))
+                .reduce(AutomataCombiner::concatenate)
+                .orElse(new EmptyToken().convertToNFA(alphabet))
+                .simplifyEpsilon();
     }
 
     public static List<Token> recursiveParse(String expression) {
