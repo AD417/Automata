@@ -5,17 +5,14 @@ import components.Alphabet;
 import components.State;
 import components.Transition;
 import exception.AlphabetException;
-import exception.ParserException;
 import operations.AutomataCombiner;
 
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class AutomataBuilder {
-    // TODO: literally should be a class.
     public static NFA parseExpression(String expression, Alphabet alphabet) {
         return recursiveParse(expression).stream()
                 .map(x -> x.convertToNFA(alphabet))
@@ -26,6 +23,7 @@ public class AutomataBuilder {
 
     public static List<Token> recursiveParse(String expression) {
         List<Token> tokens = new LinkedList<>();
+        List<Token> unions = new LinkedList<>();
         for (int i = 0; i < expression.length(); i++) {
             switch (expression.charAt(i)) {
                 case '*' -> {
@@ -47,10 +45,17 @@ public class AutomataBuilder {
                     List<Token> groupTokens = recursiveParse(expression.substring(first, i));
                     tokens.add(new GroupToken(groupTokens));
                 }
+                case '|' -> {
+                    unions.add(new GroupToken(tokens));
+                    tokens = new LinkedList<>();
+                }
                 default -> tokens.add(new CharacterToken(expression.charAt(i)));
             }
         }
-        return tokens;
+        if (unions.isEmpty()) return tokens;
+
+        unions.add(new GroupToken(tokens));
+        return List.of(new UnionToken(unions));
     }
 
     /**

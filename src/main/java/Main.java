@@ -9,14 +9,14 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        // Regex to recognize numbers divisible by 3, apparently.
-        NFA n = AutomataBuilder.parseExpression("(0*(1(01*0)*1)*)*", Alphabet.withSymbols("01"));
+        Alphabet alphabet = Alphabet.withSymbols("01");
+        NFA n = AutomataBuilder.parseExpression("[01]*001[01]*", alphabet);
         System.out.println(n);
-        DFA d = AutomataConvertor.NFAtoDFA(n).cloneReplaceStates();
-        System.out.println(d);
-
-        for (int i = 0; i < 20; i++) {
-            System.out.println(i + " :" + d.accepts(Integer.toBinaryString(i)));
-        }
+        n = AutomataBuilder.parseExpression("([01][01])*|([01][01][01])*", alphabet);
+        System.out.println(n);
+        n = AutomataBuilder.parseExpression("1*(011*)*", alphabet);
+        System.out.println(n);
+        n = AutomataBuilder.parseExpression("|[01]|[01][01]|[01][01][01]", alphabet);
+        System.out.println(n);
     }
 }
