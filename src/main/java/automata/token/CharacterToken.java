@@ -32,6 +32,6 @@ public record CharacterToken(char symbol) implements Token {
 
     @Override
     public String toString() {
-        return symbol;
+        return "" + symbol;
     }
 }
