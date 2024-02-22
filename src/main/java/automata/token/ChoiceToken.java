@@ -39,6 +39,10 @@ public record ChoiceToken(Set<Character> symbols) implements Token {
 
     @Override
     public String toString() {
-        return "Choice" + symbols;
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for (Character s : symbols) sb.append(s);
+        sb.append(']');
+        return sb.toString();
     }
 }

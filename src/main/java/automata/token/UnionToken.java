@@ -17,6 +17,12 @@ public record UnionToken(List<Token> subTokens) implements Token {
 
     @Override
     public String toString() {
-        return "Union" + subTokens;
+        if (subTokens.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        sb.append(subTokens.get(0));
+        for (int i = 1; i < subTokens.size(); i++) {
+            sb.append("|").append(subTokens.get(i));
+        }
+        return sb.toString();
     }
 }

@@ -3,10 +3,10 @@ package components;
 import java.util.*;
 
 /**
- * The transition function a Nondeterministic Finite Automaton. This "function"
- * maps from the cartesian product of all States in a NFA and all characters in
- * an alphabet to the set of all subsets of all states in the same NFA.
- *
+ * The transition function of a Nondeterministic Finite Automaton. This
+ * "function" maps from the cartesian product of all States in a NFA and all
+ * characters in an alphabet to the set of all subsets of all states in the
+ * same NFA.
  * Under the hood, this isn't actually a function, but is actually a series
  * of {@link HashMap}s that give the same result.
  */
@@ -24,6 +24,7 @@ public class Transition extends HashMap<State, HashMap<Character, Set<State>>> {
      *                 function should be able to handle.
      */
     public void initializeFor(Set<State> states, Alphabet alphabet) {
+        clear();
         Set<State> DEFAULT = Collections.unmodifiableSet(new HashSet<>());
         for (State state : states) {
             HashMap<Character, Set<State>> transitionMap = computeIfAbsent(state, k -> new HashMap<>());

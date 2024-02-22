@@ -14,4 +14,9 @@ public record PlusToken(Token subToken) implements Token {
                 AutomataCombiner.kleeneStar(singleIteration)
         );
     }
+
+    @Override
+    public String toString() {
+        return subToken + "+";
+    }
 }

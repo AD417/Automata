@@ -17,6 +17,10 @@ public record GroupToken(List<Token> subTokens) implements Token {
 
     @Override
     public String toString() {
-        return "Group" + subTokens;
+        StringBuilder sb = new StringBuilder();
+        sb.append('(');
+        for (Token token : subTokens) sb.append(token);
+        sb.append(')');
+        return sb.toString();
     }
 }

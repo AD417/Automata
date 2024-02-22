@@ -10,4 +10,9 @@ public record OptionalToken(Token subToken) implements Token {
         NFA optionalNFA = subToken.convertToNFA(alphabet);
         return AutomataCombiner.union(new EmptyToken().convertToNFA(alphabet), optionalNFA);
     }
+
+    @Override
+    public String toString() {
+        return subToken + "?";
+    }
 }

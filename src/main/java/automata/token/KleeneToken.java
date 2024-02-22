@@ -13,6 +13,6 @@ public record KleeneToken(Token baseToken) implements Token {
 
     @Override
     public String toString() {
-        return "Star[" + baseToken + "]";
+        return baseToken + "*";
     }
 }
