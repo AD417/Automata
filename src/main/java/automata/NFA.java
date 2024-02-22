@@ -68,10 +68,18 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
         }
     }
 
+    /**
+     * Determine if a string is within the regular language defined by this
+     * NFA. More specifically, determines if there is any possible set of steps
+     * that the NFA can follow to end up in an accept state.
+     * @param string the string to test with this NFA. The string parsing
+     *               begins with at the first character and runs through the
+     *               entire string.
+     * @return True iff the NFA can end up in an accept state after parsing
+     * every character in the string; false otherwise.
+     */
     public boolean accepts(String string) {
-        Set<State> currentStates = new HashSet<>();
-        currentStates.add(startState);
-        currentStates = epsilonClosure(currentStates);
+        Set<State> currentStates = epsilonClosure(startState);
 
         for (Character c : string.toCharArray()) {
             if (!alphabet.contains(c)) {
@@ -87,6 +95,59 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
             currentStates = epsilonClosure(immediateNextStates);
         }
         return acceptingStates.stream().anyMatch(currentStates::contains);
+    }
+    /**
+     * Determine the valid ending points for acceptable substrings of the
+     * provided string, assuming parsing begins at the specified starting
+     * point.
+     * @param string the string to parse.
+     * @return a list of all possible ending positions for this string.
+     * These integers are such that `string.substring(0, x) will return a
+     * string that will be accepted by this NFA. These values are in ascending
+     * order.
+     */
+    public List<Integer> acceptableSubstrings(String string) {
+        return acceptableSubstrings(string, 0);
+    }
+
+    /**
+     * Determine the valid ending points for acceptable substrings of the
+     * provided string, assuming parsing begins at the specified starting
+     * point.
+     * @param string the string to parse.
+     * @param start the index to begin parsing at. Must be between 0 inclusive
+     *              and the length of the string exclusive.
+     * @return a list of all possible ending positions for this string.
+     * These integers are such that `string.substring(start, x) will return a
+     * string that will be accepted by this NFA. These values are in ascending
+     * order.
+     */
+    public List<Integer> acceptableSubstrings(String string, int start) {
+        List<Integer> valid = new LinkedList<>();
+        Set<State> currentStates = epsilonClosure(startState);
+        for (int pos = start; pos < string.length(); pos++) {
+            Character symbol = string.charAt(pos);
+            if (!alphabet.contains(symbol)) {
+                String msg = String.format(
+                        "String '%s' contains symbol '%c' not in Automaton's alphabet.",
+                        string, symbol
+                );
+                throw new AlphabetException(msg);
+            }
+
+            Set<State> immediateNextStates = new HashSet<>();
+            currentStates.stream()
+                    .map(state -> transitionFunction.transition(state, symbol))
+                    .filter(Objects::nonNull)
+                    .forEach(immediateNextStates::addAll);
+
+            currentStates = epsilonClosure(immediateNextStates);
+
+            if (acceptingStates.stream().anyMatch(currentStates::contains)) {
+                valid.add(pos+1);
+            }
+        }
+        return valid;
     }
 
     public Set<State> epsilonClosure(State state) {
