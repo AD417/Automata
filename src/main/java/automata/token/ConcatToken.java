@@ -18,9 +18,7 @@ public record ConcatToken(List<Token> subTokens) implements Token {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append('(');
         for (Token token : subTokens) sb.append(token);
-        sb.append(')');
         return sb.toString();
     }
 }

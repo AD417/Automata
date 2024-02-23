@@ -1,9 +1,6 @@
 package automata;
 
-import components.Alphabet;
-import components.DeterministicTransition;
-import components.State;
-import components.Transition;
+import components.*;
 import exception.AlphabetException;
 import exception.InvalidAutomatonException;
 
@@ -269,6 +266,42 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
             }
         }
         return new NFA(kept, alphabet, tf, startState, acceptingStates);
+    }
+
+    /**
+     * Reduce the "complexity" of the NFA by ensuring that the starting and
+     * ending states have no transitions out of them.
+     * Since we're lazy, we create a new first state that epsilon-transitions
+     * to the original start state, and a new accept state that all original
+     * accept states epsilon-transition to.
+     * @return a new NFA with a start state with no transitions to, and a
+     * singular end state that doesn't transition anywhere.
+     */
+    public NFA reduceStartEndComplexity() {
+        State start = new State();
+        State end = new State();
+
+        Set<State> nextStates = new HashSet<>(states);
+        nextStates.add(start);
+        nextStates.add(end);
+
+        Transition tf = new Transition();
+        tf.initializeFor(nextStates, alphabet);
+        transitionFunction.addAllTo(tf);
+        tf.setState(start, Alphabet.EPSILON, startState);
+        for (State s : acceptingStates) tf.setState(s, Alphabet.EPSILON, end);
+
+        return new NFA(nextStates, alphabet, tf, start, Set.of(end));
+    }
+
+    public GNFA convertToGNFA() {
+        NFA copy = reduceStartEndComplexity();
+        GeneralTransition gt = new GeneralTransition();
+        gt.convertFrom(copy.transitionFunction, copy.alphabet);
+
+        State end = copy.acceptingStates.stream().findFirst().orElseThrow();
+
+        return new GNFA(copy.states, copy.alphabet, gt, copy.startState, end);
     }
 
     @Override

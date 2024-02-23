@@ -39,7 +39,8 @@ public class GeneralTransition extends HashMap<State, HashMap<State, Token>> {
      * @param tf a transition function to make this function equivalent to.
      */
     public void convertFrom(Transition tf, Alphabet alphabet) {
-        Set<Character> actualAlphabet = new HashSet<>(Alphabet.EPSILON);
+        Set<Character> actualAlphabet = new HashSet<>();
+        actualAlphabet.add(Alphabet.EPSILON);
         actualAlphabet.addAll(alphabet);
         initializeFor(tf.getStates());
         for (State currentState : tf.getStates()) {
@@ -58,8 +59,12 @@ public class GeneralTransition extends HashMap<State, HashMap<State, Token>> {
                 if (Objects.isNull(choice)) {
                     transition.put(futureState, new NullToken());
                 } else if (choice.size() == 1) {
-                    Character symbol = choice.stream().findFirst().orElseThrow();
-                    transition.put(futureState, new CharacterToken(symbol));
+                    char symbol = choice.stream().findFirst().orElseThrow();
+                    if (symbol == Alphabet.EPSILON) {
+                        transition.put(futureState, new EmptyToken());
+                    } else {
+                        transition.put(futureState, new CharacterToken(symbol));
+                    }
                 } else {
                     transition.put(futureState, new ChoiceToken(choice));
 
