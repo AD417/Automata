@@ -3,6 +3,7 @@ package automata;
 import components.*;
 import exception.AlphabetException;
 import exception.InvalidAutomatonException;
+import operations.AutomataConvertor;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -294,7 +295,11 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
         return new NFA(nextStates, alphabet, tf, start, Set.of(end));
     }
 
-    public GNFA convertToGNFA() {
+    public DFA toDFA() {
+        return AutomataConvertor.NFAtoDFA(this);
+    }
+
+    public GNFA toGNFA() {
         NFA copy = reduceStartEndComplexity();
         GeneralTransition gt = new GeneralTransition();
         gt.convertFrom(copy.transitionFunction, copy.alphabet);

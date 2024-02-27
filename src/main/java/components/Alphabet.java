@@ -13,7 +13,7 @@ public class Alphabet extends HashSet<Character> {
      * An unused control character representing Epsilon transitions in an NFA.
      * Epsilon transitions change an NFA's state without moving the tape head.
      */
-    public static final Character EPSILON = '\uFFFF';
+    public static final Character EPSILON = 'ε'; // '\uFFFF';
 
     /**
      * An alphabet containing all uppercase and lowercase letters from a-z.

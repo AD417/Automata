@@ -5,6 +5,7 @@ import components.DeterministicTransition;
 import components.State;
 import exception.AlphabetException;
 import exception.InvalidAutomatonException;
+import operations.AutomataConvertor;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -127,6 +128,14 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
         }
 
         return new DFA(newStates, alphabet, transition, newStart, newAccept);
+    }
+
+    public NFA toNFA() {
+        return AutomataConvertor.DFAtoNFA(this);
+    }
+
+    public GNFA toGNFA() {
+        return toNFA().toGNFA();
     }
 
     @Override
