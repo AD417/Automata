@@ -1,4 +1,4 @@
-package exception;
+package automata.exception;
 
 /**
  * General exception thrown when an Alphabet, or interactions with it, result

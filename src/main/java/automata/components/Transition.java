@@ -1,4 +1,4 @@
-package components;
+package automata.components;
 
 import java.util.*;
 

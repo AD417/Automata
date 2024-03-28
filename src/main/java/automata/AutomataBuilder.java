@@ -1,11 +1,11 @@
 package automata;
 
 import automata.token.*;
-import components.Alphabet;
-import components.State;
-import components.Transition;
-import exception.AlphabetException;
-import operations.AutomataCombiner;
+import automata.components.Alphabet;
+import automata.components.State;
+import automata.components.Transition;
+import automata.exception.AlphabetException;
+import automata.operations.AutomataCombiner;
 
 import java.util.HashSet;
 import java.util.LinkedList;

@@ -1,11 +1,11 @@
-package operations;
+package automata.operations;
 
 import automata.DFA;
 import automata.NFA;
-import components.*;
-import exception.AlphabetException;
-import exception.InvalidAutomatonException;
-import exception.InvalidStateException;
+import automata.components.*;
+import automata.exception.AlphabetException;
+import automata.exception.InvalidAutomatonException;
+import automata.exception.InvalidStateException;
 
 import java.util.HashSet;
 import java.util.Set;

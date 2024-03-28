@@ -1,9 +1,9 @@
 package automata.token;
 
 import automata.NFA;
-import components.Alphabet;
-import components.State;
-import components.Transition;
+import automata.components.Alphabet;
+import automata.components.State;
+import automata.components.Transition;
 
 import java.util.Set;
 

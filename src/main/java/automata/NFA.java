@@ -1,9 +1,9 @@
 package automata;
 
-import components.*;
-import exception.AlphabetException;
-import exception.InvalidAutomatonException;
-import operations.AutomataConvertor;
+import automata.components.*;
+import automata.exception.AlphabetException;
+import automata.exception.InvalidAutomatonException;
+import automata.operations.AutomataConvertor;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package components;
+package automata.components;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +29,24 @@ public class DeterministicTransition extends HashMap<State, HashMap<Character, S
         for (State state : states) {
             HashMap<Character, State> stateFunction = computeIfAbsent(state, k -> new HashMap<>());
             alphabet.forEach(chr -> stateFunction.put(chr, state));
+        }
+    }
+
+    /**
+     * Copy the transitions present in the other transition function into this
+     * one. Assumes that the states and alphabet in this transition function
+     * are a subset of those found in the other function.
+     * @param other Another deterministic transition fucntion. Assumed to
+     *              have the same alphabet as, and at least all the states
+     *              in this transition function.
+     * @param alphabet the Alphabet used in this transition function. Assumed
+     *                 to be the same in both functions.
+     */
+    public void copyFrom(DeterministicTransition other, Alphabet alphabet) {
+        for (State state : other.getStates()) {
+            for (Character symbol : alphabet) {
+                this.setState(state, symbol, other.transition(state, symbol));
+            }
         }
     }
 

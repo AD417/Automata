@@ -1,4 +1,4 @@
-package exception;
+package automata.exception;
 
 /**
  * General exception used when an invalid state is detected in an Automaton.

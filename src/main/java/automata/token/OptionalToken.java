@@ -1,8 +1,8 @@
 package automata.token;
 
 import automata.NFA;
-import components.Alphabet;
-import operations.AutomataCombiner;
+import automata.components.Alphabet;
+import automata.operations.AutomataCombiner;
 
 public record OptionalToken(Token subToken) implements Token {
     @Override

@@ -1,9 +1,8 @@
 package automata.token;
 
 import automata.NFA;
-import components.Alphabet;
-import operations.AutomataCombiner;
-import operations.AutomataConvertor;
+import automata.components.Alphabet;
+import automata.operations.AutomataCombiner;
 
 public record PlusToken(Token subToken) implements Token {
     @Override

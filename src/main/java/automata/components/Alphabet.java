@@ -1,6 +1,6 @@
-package components;
+package automata.components;
 
-import exception.AlphabetException;
+import automata.exception.AlphabetException;
 
 import java.util.HashSet;
 

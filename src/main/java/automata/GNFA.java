@@ -1,14 +1,11 @@
 package automata;
 
-import components.Alphabet;
-import components.GeneralTransition;
-import components.State;
+import automata.components.Alphabet;
+import automata.components.GeneralTransition;
+import automata.components.State;
 
-import java.util.AbstractMap;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public record GNFA(Set<State> states, Alphabet alphabet, GeneralTransition transitionFunction, State startState,
                    State acceptingState) {

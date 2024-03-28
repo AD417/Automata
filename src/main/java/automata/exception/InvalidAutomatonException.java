@@ -1,4 +1,4 @@
-package exception;
+package automata.exception;
 
 /**
  * General exception for when an invalid Automaton is attempted to be

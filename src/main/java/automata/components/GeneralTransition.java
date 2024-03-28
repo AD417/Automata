@@ -1,7 +1,7 @@
-package components;
+package automata.components;
 
 import automata.token.*;
-import exception.InvalidStateException;
+import automata.exception.InvalidStateException;
 
 import java.util.*;
 

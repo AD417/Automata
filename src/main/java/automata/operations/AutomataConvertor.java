@@ -1,11 +1,11 @@
-package operations;
+package automata.operations;
 
 import automata.DFA;
 import automata.NFA;
-import components.Alphabet;
-import components.DeterministicTransition;
-import components.State;
-import components.Transition;
+import automata.components.Alphabet;
+import automata.components.DeterministicTransition;
+import automata.components.State;
+import automata.components.Transition;
 
 import java.util.HashSet;
 import java.util.LinkedList;

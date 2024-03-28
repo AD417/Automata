@@ -1,12 +1,11 @@
 package automata.token;
 
 import automata.NFA;
-import components.Alphabet;
-import components.State;
-import components.Transition;
-import exception.AlphabetException;
+import automata.components.Alphabet;
+import automata.components.State;
+import automata.components.Transition;
+import automata.exception.AlphabetException;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
