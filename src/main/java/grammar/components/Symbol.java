@@ -1,15 +1,22 @@
 package grammar.components;
 
+/**
+ * A terminal symbol in a CFG string.
+ */
 public class Symbol implements Element {
     /** A toString representation of this variable. */
-    private final char representation;
+    private final char symbol;
 
+    /**
+     * Create a terminal symbol that converts to the provided character.
+     * @param symbol the terminal character this represents
+     */
     public Symbol(char symbol) {
-        representation = symbol;
+        this.symbol = symbol;
     }
 
     public String toString() {
-        return "" + representation;
+        return "" + symbol;
     }
 
     @Override

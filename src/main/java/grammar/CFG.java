@@ -12,11 +12,11 @@ import java.util.stream.StreamSupport;
 /**
  * A context-free grammar. Generates strings by applying various rules to create strings.
  * @param variables The set of all the variables that can be made from
- * @param output
+ * @param alphabet
  * @param grammar
  * @param start
  */
-public record CFG(Set<Variable> variables, Set<Symbol> output, Grammar grammar, Variable start) {
+public record CFG(Set<Variable> variables, Set<Symbol> alphabet, Grammar grammar, Variable start) {
     private class CFStringIterator implements Iterator<String> {
         final int limit;
         int found = 0;
@@ -62,10 +62,25 @@ public record CFG(Set<Variable> variables, Set<Symbol> output, Grammar grammar, 
         }
     }
 
+    /**
+     * Provide a stream of strings created by this language. These
+     * @param limit The maximum number of strings to create. Will terminate
+     *              early if no more strings can be generated.
+     * @return A string outputting
+     */
     public Stream<String> sampleStrings(int limit) {
         Iterator<String> itr = new CFStringIterator(limit);
         Spliterator<String> sitr = Spliterators.spliteratorUnknownSize(itr, 0);
 
         return StreamSupport.stream(sitr, false);
+    }
+
+    @Override
+    public String toString() {
+        return "CFG G = (V, Σ, R, S), where:\n" +
+                "V = " + variables + "\n" +
+                "Σ = " + alphabet + "\n" +
+                "R = the following rules:\n" + grammar + "\n" +
+                "S = " + start;
     }
 }

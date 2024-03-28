@@ -2,12 +2,19 @@ package grammar.components;
 
 import java.util.ArrayList;
 
+/**
+ * A string containing terminal symbols and nonterminal variables from a CFG.
+ */
 public class CFString extends ArrayList<Element> implements Comparable<CFString> {
     private CFString(int size) {
         super(size);
     }
 
-    public CFString(Element seed) {
+    /**
+     * Createe a starting string with the provided base element.
+     * @param seed The starting element.
+     */
+    public CFString(Variable seed) {
         super();
         add(seed);
     }

@@ -62,4 +62,23 @@ public class Grammar extends HashMap<Variable, Set<CFString>> {
                 .map(x -> str.cloneReplace(index, x))
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Variable v : keySet()) {
+            sb.append(v);
+            sb.append(" -> ");
+            get(v).stream().sorted().forEachOrdered(x -> {
+                sb.append(x);
+                sb.append(" | ");
+            });
+            sb.setLength(sb.length() - 3);
+            sb.append('\n');
+        }
+        if (!sb.isEmpty()) {
+            sb.setLength(sb.length() - 1);
+        }
+        return sb.toString();
+    }
 }

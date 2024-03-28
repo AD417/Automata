@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-        int SIZE = 5;
+        int SIZE = 4;
         Grammar g = new Grammar();
         g.addRule('S', "O | E");
         g.addRule('O', "0O0 | 0O1 | 1O0 | 1O1 | 0 | 1");
@@ -25,7 +25,7 @@ public class Main {
 
         CFG cfg = new CFG(variables, symbols, g, new Variable('S'));
 
-        Set<String> language = cfg.sampleStrings(100000).filter(x -> x.length() == SIZE*2).collect(Collectors.toSet());
+        Set<String> language = cfg.sampleStrings(10000).filter(x -> x.length() == SIZE*2).collect(Collectors.toSet());
 
         int errors = 0;
         for (int i = 0; i < 1 << (SIZE*2); i++) {
@@ -37,5 +37,6 @@ public class Main {
             errors++;
         }
         System.out.println("> RESULT: " + errors + " Missing values detected.");
+        System.out.println(cfg);
     }
 }
