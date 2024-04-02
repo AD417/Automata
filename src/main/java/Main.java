@@ -1,3 +1,8 @@
+import automata.PDA;
+import automata.components.Alphabet;
+import automata.components.StackState;
+import automata.components.StackTransition;
+import automata.components.State;
 import grammar.CFG;
 import grammar.components.Grammar;
 import grammar.components.Symbol;
@@ -8,35 +13,55 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-        int SIZE = 4;
-        Grammar g = new Grammar();
-        g.addRule('S', "O | E");
-        g.addRule('O', "0O0 | 0O1 | 1O0 | 1O1 | 0 | 1");
-        g.addRule('E', "AB | BA");
-        g.addRule('A', "0A0 | 0A1 | 1A0 | 1A1 | 0");
-        g.addRule('B', "0B0 | 0B1 | 1B0 | 1B1 | 1");
+        Alphabet alphabet = Alphabet.withSymbols("ab");
+        Set<Character> stackAlphabet = Set.of('$', 'A', 'B');
 
-        Set<Symbol> symbols = Set.of(new Symbol('0'), new Symbol('1'));
-        Set<Variable> variables = Set.of(new Variable("S"),
-                                         new Variable("E"),
-                                         new Variable("O"),
-                                         new Variable("A"),
-                                         new Variable("B"));
+        State start = new State("START");
+        State mid = new State("Q");
+        State end = new State("FINAL");
 
-        CFG cfg = new CFG(variables, symbols, g, new Variable('S'));
+        Set<State> states = Set.of(start, mid, end);
 
-        Set<String> language = cfg.sampleStrings(10000).filter(x -> x.length() == SIZE*2).collect(Collectors.toSet());
+        StackTransition st = new StackTransition();
+        st.initializeFor(states, stackAlphabet, alphabet);
 
-        int errors = 0;
-        for (int i = 0; i < 1 << (SIZE*2); i++) {
-            String s = "00".repeat(SIZE) + Integer.toBinaryString(i);
-            s = s.substring(s.length()-(SIZE*2));
-            if (s.substring(0, SIZE).equals(s.substring(SIZE, SIZE*2))) continue;
-            if (language.contains(s)) continue;
-            System.out.println(s);
-            errors++;
-        }
-        System.out.println("> RESULT: " + errors + " Missing values detected.");
-        System.out.println(cfg);
+        // Add a starting control character.
+        StackState now = new StackState(start, Alphabet.EPSILON);
+        StackState next = new StackState(mid, '$');
+        st.setState(now, Alphabet.EPSILON, next);
+
+        // If we read an 'a', we can add an "A"...
+        now = new StackState(mid, Alphabet.EPSILON);
+        next = new StackState(mid, 'A');
+        st.setState(now, 'a', next);
+
+        // ...or remove a "B", if possible.
+        next = new StackState(mid, 'B');
+        st.setState(now, 'b', next);
+
+        // If we read a 'b', we can add a "B"...
+        now = new StackState(mid, 'A');
+        next = new StackState(mid, Alphabet.EPSILON);
+        st.setState(now, 'b', next);
+
+        // Or remove an "A", if possible.
+        now = new StackState(mid, 'B');
+        next = new StackState(mid, Alphabet.EPSILON);
+        st.setState(now, 'a', next);
+
+        // If the only thing on the stack is the initial control char,
+        // Then we can move to the accept state.
+        now = new StackState(mid, '$');
+        next = new StackState(end, Alphabet.EPSILON);
+        st.setState(now, Alphabet.EPSILON, next);
+
+        Set<State> accepting = Set.of(end);
+
+        // "Accept all strings where #'a' == #'b'.
+        PDA pushover = new PDA(states, alphabet, stackAlphabet, st, start, accepting);
+
+        st.entrySet().forEach(System.out::println);
+        System.out.println();
+        System.out.println(pushover.accepts("bbbbaaaa"));
     }
 }

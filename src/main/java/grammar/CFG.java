@@ -10,13 +10,21 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * A context-free grammar. Generates strings by applying various rules to create strings.
- * @param variables The set of all the variables that can be made from
- * @param alphabet
- * @param grammar
- * @param start
+ * A context-free grammar. Encodes a set of rules that, when followed from a
+ * starting "seed" variable, will produce any string in the relevant
+ * Context-Free Language.
+ * @param variables The set of all variables used in the CFG parsing.
+ * @param alphabet The set of all terminal symbols that can end up in a
+ *                 complete CFL string.
+ * @param grammar The set of rules that can be used to modify a partially built
+ *                CFG string.
+ * @param start The initial, or "seed" variable, from which all CFL strings are
+ *              derived from by following the provided grammar rules.
  */
-public record CFG(Set<Variable> variables, Set<Symbol> alphabet, Grammar grammar, Variable start) {
+public record CFG(Set<Variable> variables,
+                  Set<Symbol> alphabet,
+                  Grammar grammar,
+                  Variable start) {
     private class CFStringIterator implements Iterator<String> {
         final int limit;
         int found = 0;
