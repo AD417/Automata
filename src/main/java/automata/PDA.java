@@ -105,8 +105,6 @@ public record PDA(Set<State> states,
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet());
 
-        currentConfigs.forEach(System.out::println);
-
         for (Character symbol : string.toCharArray()) {
             if (!stringAlphabet.contains(symbol)) {
                 String msg = String.format(
@@ -120,9 +118,6 @@ public record PDA(Set<State> states,
                     .map(c -> transitionStep(c, Alphabet.EPSILON))
                     .flatMap(Set::stream)
                     .collect(Collectors.toSet());
-
-            currentConfigs.forEach(System.out::println);
-            System.out.println();
         }
         return currentConfigs.stream().anyMatch(x -> acceptingStates.contains(x.state));
     }

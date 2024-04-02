@@ -3,10 +3,6 @@ import automata.components.Alphabet;
 import automata.components.StackState;
 import automata.components.StackTransition;
 import automata.components.State;
-import grammar.CFG;
-import grammar.components.Grammar;
-import grammar.components.Symbol;
-import grammar.components.Variable;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,34 +22,18 @@ public class Main {
         st.initializeFor(states, stackAlphabet, alphabet);
 
         // Add a starting control character.
-        StackState now = new StackState(start, Alphabet.EPSILON);
-        StackState next = new StackState(mid, '$');
-        st.setState(now, Alphabet.EPSILON, next);
-
+        st.setState(start, Alphabet.EPSILON, Alphabet.EPSILON, mid, '$');
         // If we read an 'a', we can add an "A"...
-        now = new StackState(mid, Alphabet.EPSILON);
-        next = new StackState(mid, 'A');
-        st.setState(now, 'a', next);
-
+        st.setState(mid, Alphabet.EPSILON, 'a', mid, 'A');
         // ...or remove a "B", if possible.
-        next = new StackState(mid, 'B');
-        st.setState(now, 'b', next);
-
+        st.setState(mid, 'B', 'a', mid, Alphabet.EPSILON);
         // If we read a 'b', we can add a "B"...
-        now = new StackState(mid, 'A');
-        next = new StackState(mid, Alphabet.EPSILON);
-        st.setState(now, 'b', next);
-
+        st.setState(mid, Alphabet.EPSILON, 'b', mid, 'B');
         // Or remove an "A", if possible.
-        now = new StackState(mid, 'B');
-        next = new StackState(mid, Alphabet.EPSILON);
-        st.setState(now, 'a', next);
-
+        st.setState(mid, 'A', 'b', mid, Alphabet.EPSILON);
         // If the only thing on the stack is the initial control char,
         // Then we can move to the accept state.
-        now = new StackState(mid, '$');
-        next = new StackState(end, Alphabet.EPSILON);
-        st.setState(now, Alphabet.EPSILON, next);
+        st.setState(mid, '$', Alphabet.EPSILON, end, Alphabet.EPSILON);
 
         Set<State> accepting = Set.of(end);
 
@@ -62,6 +42,11 @@ public class Main {
 
         st.entrySet().forEach(System.out::println);
         System.out.println();
-        System.out.println(pushover.accepts("bbbbaaaa"));
+        System.out.println(pushover.accepts(""));
+        System.out.println(pushover.accepts("ab"));
+        System.out.println(pushover.accepts("ba"));
+        System.out.println(pushover.accepts("aaaabbbb"));
+        System.out.println(pushover.accepts("bababababbaab"));
+        System.out.println(pushover.accepts("a"));
     }
 }

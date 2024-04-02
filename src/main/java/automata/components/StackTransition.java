@@ -38,6 +38,25 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
     }
 
     /**
+     * Set the output of this transition function using the full
+     * (Q x Σ x Γ) --> (Q x Γ) definition.
+     * @param stateIn The input state.
+     * @param stackIn The input stack symbol (popped from the stack).
+     *                May be epsilon (Nothing).
+     * @param tapeChar The input tape character.
+     *                 May be epsilon (epsilon transition)
+     * @param stateOut The output state.
+     * @param stackOut The output stack symbol (pushed to the stack).
+     *                 May be epsilon (Nothing).
+     */
+    public void setState(State stateIn, Character stackIn, Character tapeChar,
+                         State stateOut, Character stackOut) {
+        setState(new StackState(stateIn, stackIn),
+                tapeChar,
+                new StackState(stateOut, stackOut));
+    }
+
+    /**
      * Set the output of this transition function for an input state and
      * symbol. This overwrites all previous transitions for this input.
      * @param currentState The input state for this transition rule.
