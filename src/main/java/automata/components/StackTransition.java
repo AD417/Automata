@@ -122,39 +122,35 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
 
     @Override
     public String toString() {
-        return super.toString();
-        /*if (size() == 0) return "{EMPTY}\n";
+        //return super.toString();
+        if (size() == 0) return "{EMPTY}\n";
         Set<StackState> states = getStates();
         Set<Character> alphabet = get(states.stream().findFirst().orElseThrow()).keySet();
 
-        int longest = states.stream().mapToInt(x -> x.getName().length()).max().orElseThrow();
-        if (longest < 5) longest = 5;
-        longest++;
-        String formatter = "%"+longest+"s";
+        int longest = states.stream().mapToInt(x -> x.toString().length()).max().orElseThrow();
+        if (longest < 10) longest = 10;
+        longest += 4;
+        String formatter = "%-"+longest+"s";
 
         int lineLength = longest;
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format(formatter, "STATE"));
-        for (Character c : alphabet) {
-            if (c == Alphabet.EPSILON) c = 'ε';
-            sb.append(" |").append(String.format(formatter, c));
-            lineLength += longest + 2;
-        }
-        sb.append('\n');
-        sb.append("-".repeat(Math.max(0, lineLength)));
-        sb.append('\n');
-        states.stream().sorted().forEach(state -> {
-            sb.append(String.format(formatter, state));
-            // TODO: check what happens if the transition output is longer
-            //  than any input.
-            for (Character c : alphabet) {
-                String transitionStr = transition(state, c).toString();
-                if (transitionStr.equals("[]")) transitionStr = "";
-                sb.append(" |").append(String.format(formatter, transitionStr));
-            }
-            sb.append('\n');
+        sb.append(String.format(formatter, "q(in), [Γ], s "));
+        sb.append("--> q(out), [Γ]\n");
+        sb.append("-".repeat(longest + 15)).append("\n");
+
+        states.stream().sorted().forEachOrdered(state -> {
+            String asStr = state.toString();
+            HashMap<Character, Set<StackState>> map = get(state);
+            map.keySet().stream().sorted().forEachOrdered(x -> {
+                for (StackState s : map.get(x)) {
+                    String unformatted = asStr + ", " + x;
+                    sb.append(String.format(formatter, unformatted)).append("--> ");
+                    sb.append(s);
+                    sb.append('\n');
+                }
+            });
         });
 
-        return sb.toString();*/
+        return sb.toString();
     }
 }

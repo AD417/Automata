@@ -119,4 +119,16 @@ public record PDA(Set<State> states,
         }
         return currentConfigs.stream().anyMatch(x -> acceptingStates.contains(x.state));
     }
+
+    @Override
+    public String toString() {
+        return "PDA P = (Q, Σ, Γ, δ, q0, F), where:\n" +
+                "Q = " + states + "\n" +
+                "Σ = " + stringAlphabet + "\n" +
+                "Γ = " + stackAlphabet + "\n" +
+                "δ = the following relation data:\n" + relation +
+                "q0 = " + startState + "\n" +
+                "F = " + acceptingStates;
+
+    }
 }

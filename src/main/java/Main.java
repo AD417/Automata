@@ -22,26 +22,26 @@ public class Main {
         //st.initializeFor(states, stackAlphabet, alphabet);
 
         // Add a starting control character.
-        st.setState(start, "" +Alphabet.EPSILON, Alphabet.EPSILON, mid, "$");
+        st.setState(start, "" +Alphabet.EPSILON, Alphabet.EPSILON, mid, StackAlphabet.CONTROL);
         // If we read an 'a', we can add an "A"...
-        st.setState(mid, ""+Alphabet.EPSILON, 'a', mid, "A");
+        st.setState(mid, StackAlphabet.EPSILON, 'a', mid, "A");
         // ...or remove a "B", if possible.
-        st.setState(mid, "B", 'a', mid, ""+Alphabet.EPSILON);
+        st.setState(mid, "B", 'a', mid, StackAlphabet.EPSILON);
         // If we read a 'b', we can add a "B"...
-        st.setState(mid, ""+Alphabet.EPSILON, 'b', mid, "B");
+        st.setState(mid, StackAlphabet.EPSILON, 'b', mid, "B");
         // Or remove an "A", if possible.
-        st.setState(mid, "A", 'b', mid, ""+Alphabet.EPSILON);
+        st.setState(mid, "A", 'b', mid, StackAlphabet.EPSILON);
         // If the only thing on the stack is the initial control char,
         // Then we can move to the accept state.
-        st.setState(mid, "$", Alphabet.EPSILON, end, ""+Alphabet.EPSILON);
+        st.setState(mid, StackAlphabet.CONTROL, Alphabet.EPSILON, end, StackAlphabet.EPSILON);
 
         Set<State> accepting = Set.of(end);
 
         // "Accept all strings where #'a' == #'b'.
         PDA pushover = new PDA(states, alphabet, stackAlphabet, st, start, accepting);
 
-        st.entrySet().forEach(System.out::println);
-        System.out.println();
+        //st.entrySet().forEach(System.out::println);
+        System.out.println(pushover);
         System.out.println(pushover.accepts(""));
         System.out.println(pushover.accepts("ab"));
         System.out.println(pushover.accepts("ba"));
