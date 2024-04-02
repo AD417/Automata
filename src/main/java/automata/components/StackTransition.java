@@ -23,13 +23,13 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
      * @param alphabet The alphabet containing all symbols this transition
      *                 function should be able to handle.
      */
-    public void initializeFor(Set<State> states, Set<Character> stackSymbols, Alphabet alphabet) {
+    public void initializeFor(Set<State> states, Set<String> stackSymbols, Alphabet alphabet) {
         clear();
         Set<StackState> DEFAULT = Collections.unmodifiableSet(new HashSet<>());
         stackSymbols = new HashSet<>(stackSymbols);
-        stackSymbols.add(Alphabet.EPSILON); // VERY BAND-AID FIX
+        stackSymbols.add("" + Alphabet.EPSILON); // VERY BAND-AID FIX
         for (State state : states) {
-            for (Character stackSymbol : stackSymbols) {
+            for (String stackSymbol : stackSymbols) {
                 StackState input = new StackState(state, stackSymbol);
                 for (Character symbol : alphabet) setState(input, symbol, DEFAULT);
                 setState(input, Alphabet.EPSILON, DEFAULT);
@@ -49,8 +49,8 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
      * @param stackOut The output stack symbol (pushed to the stack).
      *                 May be epsilon (Nothing).
      */
-    public void setState(State stateIn, Character stackIn, Character tapeChar,
-                         State stateOut, Character stackOut) {
+    public void setState(State stateIn, String stackIn, Character tapeChar,
+                         State stateOut, String stackOut) {
         setState(new StackState(stateIn, stackIn),
                 tapeChar,
                 new StackState(stateOut, stackOut));
@@ -65,7 +65,7 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
      */
     public void setState(StackState currentState, Character chr, StackState ...results) {
         Set<StackState> states = new HashSet<>(Arrays.asList(results));
-        getOrDefault(currentState, new HashMap<>()).put(chr, states);
+        computeIfAbsent(currentState, k -> new HashMap<>()).put(chr, states);
     }
 
     /**
@@ -87,7 +87,7 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
      * given the inputs.
      */
     public Set<StackState> transition(StackState currentState, Character chr) {
-        return getOrDefault(currentState, new HashMap<>()).get(chr);
+        return getOrDefault(currentState, new HashMap<>()).getOrDefault(chr, new HashSet<>());
     }
 
     /**
@@ -98,7 +98,7 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
      */
     public Set<StackState> epsilonStackTransition(State currentState,
                                                   Character chr) {
-        StackState equivalent = new StackState(currentState, Alphabet.EPSILON);
+        StackState equivalent = new StackState(currentState, ""+Alphabet.EPSILON);
         return getOrDefault(equivalent, new HashMap<>())
                 .getOrDefault(chr, new HashSet<>());
     }

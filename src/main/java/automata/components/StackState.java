@@ -1,4 +1,4 @@
 package automata.components;
 
-public record StackState(State state, Character stackSymbol) {
+public record StackState(State state, String stackSymbol) {
 }

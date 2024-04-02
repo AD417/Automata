@@ -1,12 +1,10 @@
 package automata;
 
-import automata.components.Alphabet;
-import automata.components.StackState;
-import automata.components.StackTransition;
-import automata.components.State;
+import automata.components.*;
 import automata.exception.AlphabetException;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -36,12 +34,12 @@ import java.util.stream.Collectors;
  */
 public record PDA(Set<State> states,
                   Alphabet stringAlphabet,
-                  Set<Character> stackAlphabet,
+                  StackAlphabet stackAlphabet,
                   StackTransition relation,
                   State startState,
                   Set<State> acceptingStates) {
 
-    private record PDAConfiguration(State state, Stack<Character> stack) {}
+    private record PDAConfiguration(State state, Stack<String> stack) {}
 
     /**
      * The starting configuration, including the stack.
@@ -51,11 +49,11 @@ public record PDA(Set<State> states,
         return new PDAConfiguration(startState, new Stack<>());
     }
 
-    private Stack<Character> nextStack(Stack<Character> current, Character symbol, boolean isEpsilon) {
+    private Stack<String> nextStack(Stack<String> current, String symbol, boolean isEpsilon) {
         @SuppressWarnings("unchecked")
-        Stack<Character> next = (Stack<Character>) current.clone();
+        Stack<String> next = (Stack<String>) current.clone();
         if (!isEpsilon) next.pop();
-        if (symbol != Alphabet.EPSILON) {
+        if (!Objects.equals(symbol, "" + Alphabet.EPSILON)) {
             next.push(symbol);
         }
         return next;
@@ -67,14 +65,14 @@ public record PDA(Set<State> states,
 
         for (StackState eResult : relation.epsilonStackTransition(config.state, symbol)) {
             //System.out.println(config.state + ", ε, " + symbol + " --> " + eResult);
-            Stack<Character> futureStack = nextStack(config.stack, eResult.stackSymbol(), true);
+            Stack<String> futureStack = nextStack(config.stack, eResult.stackSymbol(), true);
             normalStep.add(new PDAConfiguration(eResult.state(), futureStack));
         }
         if (!config.stack.isEmpty()) {
             StackState input = new StackState(config.state, config.stack.peek());
             for (StackState result : relation.transition(input, symbol)) {
                 //System.out.println(input + ", " + symbol + " --> " + result);
-                Stack<Character> futureStack = nextStack(config.stack, result.stackSymbol(), false);
+                Stack<String> futureStack = nextStack(config.stack, result.stackSymbol(), false);
                 normalStep.add(new PDAConfiguration(result.state(), futureStack));
             }
         }
@@ -84,13 +82,13 @@ public record PDA(Set<State> states,
 
         for (PDAConfiguration pda : normalStep) {
             for (StackState result : relation.epsilonStackTransition(config.state, symbol)) {
-                Stack<Character> futureStack = nextStack(config.stack, result.stackSymbol(), true);
+                Stack<String> futureStack = nextStack(config.stack, result.stackSymbol(), true);
                 epsilonStep.add(new PDAConfiguration(result.state(), futureStack));
             }
             if (!pda.stack.isEmpty()) {
                 StackState input = new StackState(pda.state, pda.stack.peek());
                 for (StackState result : relation.transition(input, symbol)) {
-                    Stack<Character> futureStack = nextStack(pda.stack, result.stackSymbol(), false);
+                    Stack<String> futureStack = nextStack(pda.stack, result.stackSymbol(), false);
                     epsilonStep.add(new PDAConfiguration(result.state(), futureStack));
                 }
             }

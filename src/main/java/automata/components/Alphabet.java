@@ -1,8 +1,10 @@
 package automata.components;
 
 import automata.exception.AlphabetException;
+import grammar.components.Symbol;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An Alphabet is defined as the set of all letters from which valid languages
@@ -26,6 +28,12 @@ public class Alphabet extends HashSet<Character> {
      * An alphabet containing all the symbols that can appear in valid numbers.
      */
     public static final Alphabet ALL_NUMBERS = Alphabet.withSymbols("1234567890-+.");
+
+    public static Alphabet withSymbols(Set<Character> alphabet) {
+        Alphabet output = new Alphabet();
+        output.addAll(alphabet);
+        return output;
+    }
 
     /**
      * Create an alphabet containing the provided list of characters.

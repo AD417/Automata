@@ -1,6 +1,6 @@
 import automata.PDA;
 import automata.components.Alphabet;
-import automata.components.StackState;
+import automata.components.StackAlphabet;
 import automata.components.StackTransition;
 import automata.components.State;
 
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class Main {
     public static void main(String[] args) {
         Alphabet alphabet = Alphabet.withSymbols("ab");
-        Set<Character> stackAlphabet = Set.of('$', 'A', 'B');
+        StackAlphabet stackAlphabet = StackAlphabet.withSymbols("$AB");
 
         State start = new State("START");
         State mid = new State("Q");
@@ -19,21 +19,21 @@ public class Main {
         Set<State> states = Set.of(start, mid, end);
 
         StackTransition st = new StackTransition();
-        st.initializeFor(states, stackAlphabet, alphabet);
+        //st.initializeFor(states, stackAlphabet, alphabet);
 
         // Add a starting control character.
-        st.setState(start, Alphabet.EPSILON, Alphabet.EPSILON, mid, '$');
+        st.setState(start, "" +Alphabet.EPSILON, Alphabet.EPSILON, mid, "$");
         // If we read an 'a', we can add an "A"...
-        st.setState(mid, Alphabet.EPSILON, 'a', mid, 'A');
+        st.setState(mid, ""+Alphabet.EPSILON, 'a', mid, "A");
         // ...or remove a "B", if possible.
-        st.setState(mid, 'B', 'a', mid, Alphabet.EPSILON);
+        st.setState(mid, "B", 'a', mid, ""+Alphabet.EPSILON);
         // If we read a 'b', we can add a "B"...
-        st.setState(mid, Alphabet.EPSILON, 'b', mid, 'B');
+        st.setState(mid, ""+Alphabet.EPSILON, 'b', mid, "B");
         // Or remove an "A", if possible.
-        st.setState(mid, 'A', 'b', mid, Alphabet.EPSILON);
+        st.setState(mid, "A", 'b', mid, ""+Alphabet.EPSILON);
         // If the only thing on the stack is the initial control char,
         // Then we can move to the accept state.
-        st.setState(mid, '$', Alphabet.EPSILON, end, Alphabet.EPSILON);
+        st.setState(mid, "$", Alphabet.EPSILON, end, ""+Alphabet.EPSILON);
 
         Set<State> accepting = Set.of(end);
 

@@ -1,11 +1,17 @@
 package grammar;
 
+import automata.PDA;
+import automata.components.Alphabet;
+import automata.components.StackAlphabet;
+import automata.components.StackTransition;
+import automata.components.State;
 import grammar.components.CFString;
 import grammar.components.Grammar;
 import grammar.components.Symbol;
 import grammar.components.Variable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -81,6 +87,59 @@ public record CFG(Set<Variable> variables,
         Spliterator<String> sitr = Spliterators.spliteratorUnknownSize(itr, 0);
 
         return StreamSupport.stream(sitr, false);
+    }
+
+    public PDA convertToPDA() {
+        Alphabet tapeAlphabet = Alphabet.withSymbols(
+                alphabet.stream().map(x -> x.toString().charAt(0)).collect(Collectors.toSet()));
+
+        StackAlphabet stackAlphabet = StackAlphabet.withSymbols(
+                variables.stream().map(Variable::toString).collect(Collectors.toSet()));
+        stackAlphabet.addAll(tapeAlphabet.stream().map(x -> "" + x).collect(Collectors.toSet()));
+        stackAlphabet.add("$");
+
+        State begin = new State("START");
+        State loop = new State("LOOP");
+        State end = new State("FINAL");
+        State extra;
+        Set<State> allStates = new HashSet<>(Set.of(begin, loop, end));
+
+        StackTransition st = new StackTransition();
+
+        // Starting transition.
+        extra = new State();
+        allStates.add(extra);
+        st.setState(begin, StackAlphabet.EPSILON, Alphabet.EPSILON, extra, StackAlphabet.CONTROL);
+        st.setState(extra, StackAlphabet.EPSILON, Alphabet.EPSILON, loop, start.toString());
+
+        // Looping in-place replacements.
+        for (Variable input : grammar().keySet()) {
+            for (CFString output : grammar.get(input)) {
+                extra = loop;
+                State s;
+                for (int i = output.size()-1; i >= 0; i--) {
+                    if (i == 0) {
+                        s = loop;
+                    } else {
+                        s = new State();
+                        allStates.add(s);
+                    }
+                    st.setState(extra, StackAlphabet.EPSILON, Alphabet.EPSILON, s, output.get(i).toString());
+                    extra = s;
+                }
+            }
+        }
+        // Looping popping of stack elements where matches occur.
+        for (Character symbol : tapeAlphabet) {
+            st.setState(loop, ""+symbol, symbol, loop, StackAlphabet.EPSILON);
+        }
+
+        // Ending transition.
+        st.setState(loop, StackAlphabet.CONTROL, Alphabet.EPSILON, end, StackAlphabet.EPSILON);
+
+        Set<State> accepting = Set.of(end);
+
+        return new PDA(allStates, tapeAlphabet, stackAlphabet, st, begin, accepting);
     }
 
     @Override
