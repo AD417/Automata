@@ -124,7 +124,11 @@ public record CFG(Set<Variable> variables,
                         s = new State();
                         allStates.add(s);
                     }
-                    st.setState(extra, StackAlphabet.EPSILON, Alphabet.EPSILON, s, output.get(i).toString());
+                    // Band aid solution for the first step in a replacement;
+                    // Ensures that the transition in pops a symbol.
+                    String trans = StackAlphabet.EPSILON;
+                    if (i == output.size() - 1) trans = input.toString();
+                    st.setState(extra, trans, Alphabet.EPSILON, s, output.get(i).toString());
                     extra = s;
                 }
             }

@@ -3,50 +3,37 @@ import automata.components.Alphabet;
 import automata.components.StackAlphabet;
 import automata.components.StackTransition;
 import automata.components.State;
+import grammar.CFG;
+import grammar.components.Grammar;
+import grammar.components.Symbol;
+import grammar.components.Variable;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-        Alphabet alphabet = Alphabet.withSymbols("ab");
-        StackAlphabet stackAlphabet = StackAlphabet.withSymbols("$AB");
+        Grammar g = new Grammar();
+        g.addRule('S', "SS | A | B");
+        g.addRule('A', "aAb | ab");
+        g.addRule('B', "bBa | ba");
 
-        State start = new State("START");
-        State mid = new State("Q");
-        State end = new State("FINAL");
+        Set<Symbol> symbols = Set.of(new Symbol('a'), new Symbol('b'));
+        Set<Variable> variables = Set.of(new Variable("S"), new Variable("A"), new Variable("B"));
 
-        Set<State> states = Set.of(start, mid, end);
+        CFG cfg = new CFG(variables, symbols, g, new Variable('S'));
 
-        StackTransition st = new StackTransition();
-        //st.initializeFor(states, stackAlphabet, alphabet);
+        cfg.sampleStrings(5).forEach(System.out::println);
+        System.out.println(cfg);
+        System.out.println();
 
-        // Add a starting control character.
-        st.setState(start, "" +Alphabet.EPSILON, Alphabet.EPSILON, mid, StackAlphabet.CONTROL);
-        // If we read an 'a', we can add an "A"...
-        st.setState(mid, StackAlphabet.EPSILON, 'a', mid, "A");
-        // ...or remove a "B", if possible.
-        st.setState(mid, "B", 'a', mid, StackAlphabet.EPSILON);
-        // If we read a 'b', we can add a "B"...
-        st.setState(mid, StackAlphabet.EPSILON, 'b', mid, "B");
-        // Or remove an "A", if possible.
-        st.setState(mid, "A", 'b', mid, StackAlphabet.EPSILON);
-        // If the only thing on the stack is the initial control char,
-        // Then we can move to the accept state.
-        st.setState(mid, StackAlphabet.CONTROL, Alphabet.EPSILON, end, StackAlphabet.EPSILON);
-
-        Set<State> accepting = Set.of(end);
-
-        // "Accept all strings where #'a' == #'b'.
-        PDA pushover = new PDA(states, alphabet, stackAlphabet, st, start, accepting);
-
-        //st.entrySet().forEach(System.out::println);
+        PDA pushover = cfg.convertToPDA();
         System.out.println(pushover);
         System.out.println(pushover.accepts(""));
-        System.out.println(pushover.accepts("ab"));
-        System.out.println(pushover.accepts("ba"));
-        System.out.println(pushover.accepts("aaaabbbb"));
-        System.out.println(pushover.accepts("bababababbaab"));
-        System.out.println(pushover.accepts("a"));
+        System.out.println(pushover.accepts("abba"));
+        System.out.println(pushover.accepts("baba"));
+        System.out.println(pushover.accepts("ababbababa"));
+        System.out.println(pushover.accepts("aaaaabbbbb"));
+        System.out.println(pushover.accepts("bbbbbaaaaa"));
+        System.out.println(pushover.accepts("bbbbbaaaaab"));
     }
 }

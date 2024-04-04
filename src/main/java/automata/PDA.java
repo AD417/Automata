@@ -3,10 +3,7 @@ package automata;
 import automata.components.*;
 import automata.exception.AlphabetException;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +42,8 @@ public record PDA(Set<State> states,
      * The starting configuration, including the stack.
      * @return a configuration including the start state and empty stack.
      */
-    private PDAConfiguration startConfig() {
-        return new PDAConfiguration(startState, new Stack<>());
+    private Set<PDAConfiguration> startConfig() {
+        return epsilonClosure(new PDAConfiguration(startState, new Stack<>()));
     }
 
     private Stack<String> nextStack(Stack<String> current, String symbol, boolean isEpsilon) {
@@ -60,27 +57,27 @@ public record PDA(Set<State> states,
     }
 
     private Set<PDAConfiguration> transitionStep(PDAConfiguration config, Character symbol) {
-        Set<PDAConfiguration> normalStep = new HashSet<>();
-        if (symbol == Alphabet.EPSILON) normalStep.add(config);
+        Set<PDAConfiguration> step = new HashSet<>();
+        if (symbol == Alphabet.EPSILON) step.add(config);
 
         for (StackState eResult : relation.epsilonStackTransition(config.state, symbol)) {
             //System.out.println(config.state + ", ε, " + symbol + " --> " + eResult);
             Stack<String> futureStack = nextStack(config.stack, eResult.stackSymbol(), true);
-            normalStep.add(new PDAConfiguration(eResult.state(), futureStack));
+            step.add(new PDAConfiguration(eResult.state(), futureStack));
         }
         if (!config.stack.isEmpty()) {
             StackState input = new StackState(config.state, config.stack.peek());
             for (StackState result : relation.transition(input, symbol)) {
                 //System.out.println(input + ", " + symbol + " --> " + result);
                 Stack<String> futureStack = nextStack(config.stack, result.stackSymbol(), false);
-                normalStep.add(new PDAConfiguration(result.state(), futureStack));
+                step.add(new PDAConfiguration(result.state(), futureStack));
             }
         }
+        return step;
 
-        Set<PDAConfiguration> epsilonStep = new HashSet<>(normalStep);
-        if (symbol == Alphabet.EPSILON) epsilonStep.add(config);
+        /*Set<PDAConfiguration> epsilonStep = new HashSet<>(step);
 
-        for (PDAConfiguration pda : normalStep) {
+        for (PDAConfiguration pda : step) {
             for (StackState result : relation.epsilonStackTransition(config.state, symbol)) {
                 Stack<String> futureStack = nextStack(config.stack, result.stackSymbol(), true);
                 epsilonStep.add(new PDAConfiguration(result.state(), futureStack));
@@ -93,15 +90,40 @@ public record PDA(Set<State> states,
                 }
             }
         }
-        return epsilonStep;
+        return epsilonStep;*/
+    }
+
+    private Set<PDAConfiguration> epsilonClosure(PDAConfiguration config) {
+        Set<PDAConfiguration> out = new HashSet<>();
+        out.add(config);
+
+        Set<PDAConfiguration> step = new HashSet<>();
+        step.add(config);
+        Set<PDAConfiguration> nextStep = new HashSet<>();
+
+        // This is a very hacky solution to ensure that the PDA never gets
+        // stuck in a loop while actually being able to do the epsilon
+        // transitions it needs to. It will do as many epsilon transitions
+        // as there are states in the machine. Arguably, this is also
+        // insufficient, but you can increase the states factor if necessary.
+        for (int p = 0; p <= states().size(); p++) {
+            nextStep = step.stream()
+                    //.filter(out::contains)
+                    .map(x -> transitionStep(x, Alphabet.EPSILON))
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toSet());
+            out.addAll(step);
+            step = nextStep;
+        }
+        out.addAll(nextStep);
+        return out;
     }
 
     public boolean accepts(String string) {
-        Set<PDAConfiguration> currentConfigs = Set.of(startConfig());
-        currentConfigs = currentConfigs.stream()
-                .map(c -> transitionStep(c, Alphabet.EPSILON))
-                .flatMap(Set::stream)
-                .collect(Collectors.toSet());
+        // TODO: PDA does not deal with epsilon transitions correctly.
+        Set<PDAConfiguration> currentConfigs = startConfig();
+
+        // currentConfigs.forEach(System.out::println);
 
         for (Character symbol : string.toCharArray()) {
             if (!stringAlphabet.contains(symbol)) {
@@ -113,7 +135,7 @@ public record PDA(Set<State> states,
             currentConfigs = currentConfigs.stream()
                     .map(c -> transitionStep(c, symbol))
                     .flatMap(Set::stream)
-                    .map(c -> transitionStep(c, Alphabet.EPSILON))
+                    .map(this::epsilonClosure)
                     .flatMap(Set::stream)
                     .collect(Collectors.toSet());
         }

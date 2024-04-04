@@ -65,7 +65,8 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
      */
     public void setState(StackState currentState, Character chr, StackState ...results) {
         Set<StackState> states = new HashSet<>(Arrays.asList(results));
-        computeIfAbsent(currentState, k -> new HashMap<>()).put(chr, states);
+        computeIfAbsent(currentState, k -> new HashMap<>())
+                .computeIfAbsent(chr, k -> new HashSet<>()).addAll(states);
     }
 
     /**
@@ -75,7 +76,8 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
      * @param nextStates The valid output states for this transition rule.
      */
     public void setState(StackState currentState, Character chr, Set<StackState> nextStates) {
-        computeIfAbsent(currentState, k -> new HashMap<>()).put(chr, nextStates);
+        computeIfAbsent(currentState, k -> new HashMap<>())
+                .computeIfAbsent(chr, k -> new HashSet<>()).addAll(nextStates);
     }
 
     /**
