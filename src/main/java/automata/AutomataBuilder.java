@@ -12,11 +12,45 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * NFA Constructor that converts a (simplified) Regular Expression string
+ * into an NFA. <br>
+ * Automaton construction involves 5 basic operations:
+ * <ol>
+ *     <li>An empty string</li>
+ *     <li>A single symbol</li>
+ *     <li>The union of several substrings</li>
+ *     <li>The concatenation of two substrings</li>
+ *     <li>A kleene star operation applied to a substring</li>
+ * </ol>
+ * Any Regex String can be deconstructed into these basic operations. <br>
+
+ */
 public class AutomataBuilder {
+    /**
+     * Compile a regex expression into a NFA. Assumes the Regex string is
+     * valid.
+     * @param expression The Regular Expression operation to convert into an
+     *                   NFA.
+     * @param alphabet The Alphabet that the NFA will use. Must contain all the
+     *                 symbols explicitly used in the expression.
+     * @return a NFA that will match any string that matches the input regex.
+     */
     public static NFA parseExpression(String expression, Alphabet alphabet) {
         return parseExpression(expression, alphabet, true);
     }
 
+    /**
+     * Compile a regex expression into a NFA. Assumes the Regex string is
+     * valid.
+     * @param expression The Regular Expression operation to convert into an
+     *                   NFA.
+     * @param alphabet The Alphabet that the NFA will use. Must contain all the
+     *                 symbols explicitly used in the expression.
+     * @param simplify Whether the final NFA should be simplified (have all
+     *                 epsilon transitions removed).
+     * @return a NFA that will match any string that matches the input regex.
+     */
     public static NFA parseExpression(String expression, Alphabet alphabet, boolean simplify) {
         NFA result = recursiveParse(expression).stream()
                 .map(x -> x.convertToNFA(alphabet))
@@ -27,7 +61,18 @@ public class AutomataBuilder {
         return result;
     }
 
-    public static List<Token> recursiveParse(String expression) {
+    /**
+     * Recursively parse an input expression and convert it into a List of
+     * tokens.
+     * Each token represents one of the 5 main rules, or a modification /
+     * simplification of an existing rule.
+     * Recursion is required in the event that a union of several
+     * sub-expressions is required. Each sub-string is tokenized, and then the
+     * union of all those tokens is created as a single token.
+     * @param expression The part of an expression to parse.
+     * @return A list of tokens based on the provided (sub)string.  
+     */
+    private static List<Token> recursiveParse(String expression) {
         List<Token> tokens = new LinkedList<>();
         List<Token> unions = new LinkedList<>();
         for (int i = 0; i < expression.length(); i++) {

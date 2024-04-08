@@ -1,14 +1,12 @@
 import automata.PDA;
-import automata.components.Alphabet;
-import automata.components.StackAlphabet;
-import automata.components.StackTransition;
-import automata.components.State;
 import grammar.CFG;
 import grammar.components.Grammar;
 import grammar.components.Symbol;
 import grammar.components.Variable;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -22,7 +20,10 @@ public class Main {
 
         CFG cfg = new CFG(variables, symbols, g, new Variable('S'));
 
-        cfg.sampleStrings(5).forEach(System.out::println);
+        /*List<String> strs = cfg.sampleStrings(78).toList();
+        for (int i = 0; i < 78; i++) {
+            System.out.println(i + ": " + strs.get(i));
+        }*/
         System.out.println(cfg);
         System.out.println();
 
