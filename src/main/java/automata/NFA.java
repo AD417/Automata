@@ -8,6 +8,48 @@ import automata.operations.AutomataConvertor;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Nondeterministic Finite Automaton: a more complex Language Recognition
+ * Machine than a DFA, but providing more potential outcomes. <br>
+ * A NFA has the following differences from a DFA:
+ * <ol>
+ * <li>
+ *     When an NFA reads a symbol, it may have multiple choices for where it
+ *     will go according to its transition function, or even none at all.
+ *     The NFA can choose any of these choices, but must choose one,
+ *     if available.
+ * </li>
+ * <li>
+ *     If an NFA reaches a point where it would have no valid transition out of
+ *     its state, it is considered to immediately reject the string
+ *     it is parsing.
+ * </li>
+ * <li>
+ *     The current state of the NFA can change without reading a symbol from
+ *     the tape head. This is known as an "epsilon transition". The set of all
+ *     states reachable from an input state via epsilon transitions is known as
+ *     the "epsilon closure" of that state.
+ * </li>
+ * <li>
+ *     If there is any way for a string to be accepted through careful
+ *     selection of transitions (or, more likely, trying every single state),
+ *     then the NFA accepts the string and it is part of the language
+ *     represented by the machine.
+ * </li>
+ * </ol>
+ * @param states The set of all states recognized by this NFA.
+ * @param alphabet The set of all symbols that can be in strings read by this
+ *                 NFA.
+ * @param transitionFunction The transition function. Takes in a state and the
+ *                           current symbol and outputs the set of all states
+ *                           that may be transitioned to. Includes epsilon
+ *                           transitions.
+ * @param startState The state that the machine begins in.
+ * @param acceptingStates The set of states that the machine may end up in
+ *                        to accept the string; if there is no set of moves
+ *                        that can lead to an accepting state, then the string
+ *                        is immediately rejected.
+ */
 public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFunction, State startState,
                   Set<State> acceptingStates) {
     public NFA(
@@ -35,6 +77,18 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
         return Collections.unmodifiableSet(acceptingStates);
     }
 
+    /**
+     * Validation function.
+     * Checks if:
+     * <ol>
+     *     <li>The start state is in the state set</li>
+     *     <li>All accepting states are in the state set</li>
+     *     <li>
+     *         The State set maps to its power set via the transition function:
+     *         for any State q ∈ Q, d(q, s ∈ A) ∈ P(Q)
+     *     </li>
+     * </ol>
+     */
     private void validate() {
         if (!states.contains(startState)) {
             String msg = String.format("Invalid start state: %s is not in the state set", startState);
@@ -148,10 +202,24 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
         return valid;
     }
 
+    /**
+     * Compute the Epsilon closure of a state.
+     * @param state The state to find the epsilon closure of.
+     * @return The set of states that can be reached from this state without
+     * reading from the tapehead.
+     * @see #epsilonClosure(Set)
+     */
     public Set<State> epsilonClosure(State state) {
         return epsilonClosure(Set.of(state));
     }
 
+    /**
+     * Compute the Epsilon Closure of a set of states. This is an operation
+     * from q ∈ P(Q) unto itself, determining the set of all states reachable
+     * from the input states via epsilon transitions alone.
+     * @param states the set of states to check epsilon transitions from.
+     * @return The set of states that can be reached via epsilon transitions.
+     */
     public Set<State> epsilonClosure(Set<State> states) {
         Queue<State> toClose = new LinkedList<>(states);
         Set<State> output = new HashSet<>(states);
@@ -295,10 +363,22 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
         return new NFA(nextStates, alphabet, tf, start, Set.of(end));
     }
 
+    /**
+     * Convert this NFA to a DFA, proving the equivalence of DFAs and NFAs.
+     * @return an equivalent DFA: L(DFA) == L(NFA)
+     * @see AutomataConvertor#NFAtoDFA
+     */
     public DFA toDFA() {
         return AutomataConvertor.NFAtoDFA(this);
     }
 
+    /**
+     * Convert this NFA to a GNFA for conversion to a Regex String.
+     * This is a trivial operation, since the resulting transition strings
+     * are all either single characters, epsilons, or empty sets, and map
+     * exactly from the NFA's transition function.
+     * @return a GNFA. L(GNFA) == L(NFA).
+     */
     public GNFA toGNFA() {
         NFA copy = reduceStartEndComplexity();
         GeneralTransition gt = new GeneralTransition();
