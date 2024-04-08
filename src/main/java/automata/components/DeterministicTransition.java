@@ -7,8 +7,7 @@ import java.util.Set;
 /**
  * The transition function a Deterministic Finite Automaton. This "function"
  * maps from the cartesian product of all States in a DFA and all characters in
- * an alphabet to the set of all states in the same DFA.
- *
+ * an alphabet to the set of all states in the same DFA. <br>
  * Under the hood, this isn't actually a function, but is actually a series
  * of {@link HashMap}s that give the same result.
  */

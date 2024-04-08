@@ -70,7 +70,7 @@ public class AutomataBuilder {
      * sub-expressions is required. Each sub-string is tokenized, and then the
      * union of all those tokens is created as a single token.
      * @param expression The part of an expression to parse.
-     * @return A list of tokens based on the provided (sub)string.  
+     * @return A list of tokens based on the provided (sub)string.
      */
     private static List<Token> recursiveParse(String expression) {
         List<Token> tokens = new LinkedList<>();

@@ -13,9 +13,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Deterministic Finite Automaton. At all times, for all states, there is
- * exactly one transition, and one path from the starting point to some
- * accepting state.
+ * Deterministic Finite Automaton: The most basic of the Language Recognition
+ * Machines.
+ * At all times, for all states, there is exactly one transition. The machine
+ * may only be in exactly one state. The path taken by the machine is the same
+ * so long as the input string is the same.
+ * @param states The set of all states recognized by this DFA.
+ * @param alphabet The set of all symbols that can be in strings read by this
+ *                 DFA.
+ * @param transitionFunction The transition function. Takes in a state and the
+ *                           current symbol and outputs a single state to
+ *                           transition to.
+ * @param startState The state that the machine begins in.
+ * @param acceptingStates The set of states that the machine may end up in
+ *                        to accept the string; if the machine ends in any
+ *                        other state, the string will be rejected.
  */
 public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition transitionFunction, State startState,
                   Set<State> acceptingStates) {
@@ -35,6 +47,18 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
         validate();
     }
 
+    /**
+     * Validation function.
+     * Checks if:
+     * <ol>
+     *     <li>The start state is in the state set</li>
+     *     <li>All accepting states are in the state set</li>
+     *     <li>
+     *         The State set is closed under the transition function -- for any
+     *         State q ∈ Q, d(q, s ∈ A) ∈ Q
+     *     </li>
+     * </ol>
+     */
     private void validate() {
         if (!states.contains(startState)) {
             String msg = String.format("Invalid start state: %s is not in the state set", startState);
@@ -70,6 +94,14 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
         }
     }
 
+    /**
+     * Check if this DFA would accept this string -- If this string s ∈ L(DFA).
+     * Mechanically, this means that the DFA, starting from the start state and
+     * transitioning based on the symbols read from the string sequentially,
+     * ends up in one of the accepting states.
+     * @param string The string to check for acceptance.
+     * @return true iff this string is accepted; false otherwise.
+     */
     public boolean accepts(String string) {
         State state = startState;
         for (Character c : string.toCharArray()) {
@@ -102,7 +134,7 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
 
     /**
      * Determine if two states within this DFA are distinguishable.
-     * Mathematically, this means that there exists some string that, starting
+     * Mechanically, this means that there exists some string that, starting
      * from the given states, results in one start state accepting the string
      * and the other state rejecting the string.
      * @param first The first state to compare for distinguishabbility. Must be
@@ -322,10 +354,19 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
         return new DFA(newStates, alphabet, transition, newStart, newAccept);
     }
 
+    /**
+     * Convert this DFA to a NFA, proving the equivalence of DFAs and NFAs.
+     * @return an equivalent NFA: L(NFA) == L(DFA)
+     * @see AutomataConvertor#DFAtoNFA
+     */
     public NFA toNFA() {
         return AutomataConvertor.DFAtoNFA(this);
     }
 
+    /**
+     * Convert this DFA to a GNFA for conversion to a Regex String.
+     * @return a GNFA. L(GNFA) == L(DFA).
+     */
     public GNFA toGNFA() {
         return toNFA().toGNFA();
     }
