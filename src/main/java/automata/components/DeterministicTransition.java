@@ -35,7 +35,7 @@ public class DeterministicTransition extends HashMap<State, HashMap<Character, S
      * Copy the transitions present in the other transition function into this
      * one. Assumes that the states and alphabet in this transition function
      * are a subset of those found in the other function.
-     * @param other Another deterministic transition fucntion. Assumed to
+     * @param other Another deterministic transition function. Assumed to
      *              have the same alphabet as, and at least all the states
      *              in this transition function.
      * @param alphabet the Alphabet used in this transition function. Assumed

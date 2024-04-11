@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * An Alphabet is defined as the set of all letters from which valid languages
- * can be constructed.
+ * An Alphabet is defined as the set of all letters from which valid strings
+ * within a language can be constructed.
  */
 public class Alphabet extends HashSet<Character> {
     /**

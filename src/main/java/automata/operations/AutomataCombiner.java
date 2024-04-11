@@ -10,17 +10,24 @@ import automata.exception.InvalidStateException;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Umbrella class containing all the operations that can be applied to two
+ * finite automatons.
+ */
 public class AutomataCombiner {
     /**
      * Construct an automaton that can concatenate the two languages defined by
-     * two NFAs.
-     * This operation involves pointing all the first NFA's accept states at
-     * the second NFA's starting state via epsilon transitions. Once part of a
-     * word accepted by the first NFA is found, the second NFA can assert the
-     * remainder of the string is accepted as well.
+     * two NFAs. <br>
+     * Mechanically, this involves taking pointing the accepting states of the
+     * first NFA at the start state of the second NFA via epsilon transitions,
+     * ensuring that a substring parsed by `nfa1` is accepted before attempting
+     * to ensure the remainder is accepted by `nfa2`.
+     * Since an NFA can try every possible combination, all possible acceptable
+     * combinations of substrings will be tested by the NFAs, and any valid
+     * combination will be accepted, if any exist.
      * @param nfa1 The first NFA. Must come first in the concatenation.
      * @param nfa2 The second NFA. Must come second in the concatenation.
-     *             Assumed to use the same alphabet as the first NFA.
+     *             Must use the same alphabet as the first NFA.
      * @return a single NFA that encodes a language defined as the
      * concatenation of the languages defined by the input NFAs.
      */
@@ -41,6 +48,7 @@ public class AutomataCombiner {
         State start = nfa1.startState();
         Set<State> acceptingStates = nfa2.acceptingStates();
 
+        // Concat NFA has all of the states of both NFAs.
         allStates.addAll(nfa1.states());
         allStates.addAll(nfa2.states());
 
@@ -52,10 +60,13 @@ public class AutomataCombiner {
             throw new InvalidStateException(msg);
         }
 
+        // Concat NFA has a transition function that combines both NFAs'
+        // functions.
         tf.initializeFor(allStates, alphabet);
         nfa1.transitionFunction().addAllTo(tf);
         nfa2.transitionFunction().addAllTo(tf);
         for (State firstAccept : nfa1.acceptingStates()) {
+            // All accept states from NFA1 point to NFA2's start state.
             Set<State> epsilonTransition = new HashSet<>(
                     tf.transition(firstAccept, Alphabet.EPSILON)
             );
@@ -69,9 +80,12 @@ public class AutomataCombiner {
     /**
      * Construct an automaton that results from the intersection of the two
      * languages defined by DFAs.
-     * This operation involves the cartesian product of the two automata, to
-     * ensure that the states in both machines are accounted for at every
-     * transition.
+     * This operation uses the
+     * {@link AutomataCombiner#cartesianProduct(DeterministicTransition,
+     * DeterministicTransition, Alphabet, StateCombination) Cartesian Product}
+     * construction method used by other DFA combination methods.
+     * The set of accepting states is equal to F1 x F2, where F is the set
+     * of accepting states in either DFA.
      * @param dfa1 The first DFA, whose language is intersected with the
      *             second DFA's language.
      * @param dfa2 The second DFA, whose language is intersected with the
@@ -91,7 +105,7 @@ public class AutomataCombiner {
         }
         StateCombination combination = StateCombination.createFor(dfa1.states(), dfa2.states());
         Alphabet alphabet = dfa1.alphabet();
-        DeterministicTransition dtCombo = combineTransitions(
+        DeterministicTransition dtCombo = cartesianProduct(
                 dfa1.transitionFunction(),
                 dfa2.transitionFunction(),
                 alphabet,
@@ -113,9 +127,8 @@ public class AutomataCombiner {
     /**
      * Construct an automaton that results from applying a Kleene Star
      * operation to the langauge defined by an NFA.
-     * This means that strings from the language can occur any number of times,
-     * including zero. The NFA just loops back on itself, with accepting states
-     * having epsilon transitions back to the start.
+     * The automaton can accept any number of strings in the NFA's accepted
+     * language any number of times, including zero.
      * @param nfa the NFA to apply the Kleene Star operation to.
      * @return a NFA that accepts any string in the set defined by taking the
      * kleene star of the language defined by the input NFA.
@@ -167,11 +180,13 @@ public class AutomataCombiner {
     }
 
     /**
-     * Construct an automaton that results from the union of the two languages
-     * defined by DFAs.
-     * This operation involves the cartesian product of the two automata, to
-     * ensure that the states in both machines are accounted for at every
-     * transition.
+     * Construct an automaton that results from the intersection of the two
+     * languages defined by DFAs.
+     * This operation uses the
+     * {@link AutomataCombiner#cartesianProduct(DeterministicTransition,
+     * DeterministicTransition, Alphabet, StateCombination) Cartesian Product}
+     * construction method used by other DFA combination methods.
+     *
      * @param dfa1 The first DFA, whose language is unioned with the second
      *             DFA's language.
      * @param dfa2 The second DFA, whose language is unioned with the first
@@ -191,7 +206,7 @@ public class AutomataCombiner {
         }
         StateCombination combination = StateCombination.createFor(dfa1.states(), dfa2.states());
         Alphabet alphabet = dfa1.alphabet();
-        DeterministicTransition dtCombo = combineTransitions(
+        DeterministicTransition dtCombo = cartesianProduct(
                 dfa1.transitionFunction(),
                 dfa2.transitionFunction(),
                 alphabet,
@@ -282,7 +297,7 @@ public class AutomataCombiner {
      * @return a single DFA transition function that encodes both DFA
      * transitions.
      */
-    private static DeterministicTransition combineTransitions(
+    private static DeterministicTransition cartesianProduct(
             DeterministicTransition dt1,
             DeterministicTransition dt2,
             Alphabet alphabet,

@@ -10,7 +10,8 @@ import java.util.stream.Collectors;
 
 /**
  * Nondeterministic Finite Automaton: a more complex Language Recognition
- * Machine than a DFA, but providing more potential outcomes. <br>
+ * Machine than a DFA, providing more potential outcomes for
+ * a given transition. <br>
  * A NFA has the following differences from a DFA:
  * <ol>
  * <li>
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
  * @param acceptingStates The set of states that the machine may end up in
  *                        to accept the string; if there is no set of moves
  *                        that can lead to an accepting state, then the string
- *                        is immediately rejected.
+ *                        is rejected.
  */
 public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFunction, State startState,
                   Set<State> acceptingStates) {
@@ -85,7 +86,7 @@ public record NFA(Set<State> states, Alphabet alphabet, Transition transitionFun
      *     <li>All accepting states are in the state set</li>
      *     <li>
      *         The State set maps to its power set via the transition function:
-     *         for any State q ∈ Q, d(q, s ∈ A) ∈ P(Q)
+     *         <br> for any State q ∈ Q, d(q, s ∈ A) ∈ P(Q)
      *     </li>
      * </ol>
      */

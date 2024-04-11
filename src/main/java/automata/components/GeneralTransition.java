@@ -117,6 +117,12 @@ public class GeneralTransition extends HashMap<State, HashMap<State, Token>> {
         return goingOut * goingIn;
     }
 
+    /**
+     * Perform a single step in the "Rip and Replace" procedure, removing the
+     * provided state and editing all related connections to have the same
+     * functionality without the ripped state.
+     * @param toRip The state to remove. Must be within the set of states.
+     */
     public void rip(State toRip) {
         if (!getStates().contains(toRip)) {
             throw new InvalidStateException("State '" + toRip + "' is not in GNFA!");

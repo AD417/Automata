@@ -7,6 +7,9 @@ import java.util.*;
  * "function" maps from the cartesian product of all States in a NFA and all
  * characters in an alphabet to the set of all subsets of all states in the
  * same NFA.
+ * The general order is: <br>
+ * d(input state X top stack symbol X tape symbol)
+ *      = (output state X new stack symbol)  <br>
  * Under the hood, this isn't actually a function, but is actually a series
  * of {@link HashMap}s that give the same result.
  */
@@ -61,7 +64,8 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
      * symbol. This overwrites all previous transitions for this input.
      * @param currentState The input state for this transition rule.
      * @param chr The input symbol for this transition rule.
-     * @param results The valid output states and stack characters for this transition rule.
+     * @param results The valid output states and stack characters for this
+     *                transition rule.
      */
     public void setState(StackState currentState, Character chr, StackState ...results) {
         Set<StackState> states = new HashSet<>(Arrays.asList(results));
@@ -113,6 +117,14 @@ public class StackTransition extends HashMap<StackState, HashMap<Character, Set<
         return Collections.unmodifiableSet(keySet());
     }
 
+    /**
+     * Put all the transitions of this transition function into the supplied
+     * transition function. This overwrites the transitions present, if any.
+     * <br>
+     * Not sure why you'd want to do this. Operations don't apply as well as
+     * with NFAs.
+     * @param other The PDA transition to add these transitions to.
+     */
     public void addAllTo(StackTransition other) {
         for (StackState state : keySet()) {
             HashMap<Character, Set<StackState>> stateProduct = get(state);

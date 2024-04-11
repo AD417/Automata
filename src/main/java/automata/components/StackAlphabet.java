@@ -6,12 +6,18 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A stack Alphabet, consisting of a set of stack symbols.
+ * Stack symbols can be anything except for the empty string; for convenience,
+ * this has been expanded to be any string (refactoring may occur in
+ * the future to make Stack and Tape Alphabets use the same hardware)
+ */
 public class StackAlphabet extends HashSet<String> {
     /**
      * An unused control character representing no change to a stack in a PDA.
      * Epsilon stack changes will increase or decrease the stack's size.
      */
-    public static final String EPSILON = "ε"; // '\uFFFF';
+    public static final String EPSILON = "ε"; // "\uFFFF";
 
     /**
      * An otherwise unused control character representing the bottom of
@@ -43,6 +49,7 @@ public class StackAlphabet extends HashSet<String> {
 
     /**
      * Create a Stack Alphabet containing the provided string of characters.
+     * Each stack symbol is assumed to be a single character.
      * @param symbols a single string containing all the symbols, and only the
      *                symbols in the alphabet. Must contain at least 1 symbol.
      * @return a Stack Alphabet containing the given symbols.

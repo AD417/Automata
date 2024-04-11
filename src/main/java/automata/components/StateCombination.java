@@ -1,8 +1,10 @@
 package automata.components;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A state mapper for showing all possible combination states for
@@ -45,11 +47,8 @@ public class StateCombination extends HashMap<State, HashMap<State, State>> {
      * @return A set containing all possible combination states.
      */
     public Set<State> getAllStates() {
-        Set<State> out = new HashSet<>();
-        this.values().stream()
-                .map(HashMap::values)
-                .forEach(out::addAll);
-
-        return out;
+        return this.values().stream()
+                .flatMap(x -> x.values().stream())
+                .collect(Collectors.toSet());
     }
 }
