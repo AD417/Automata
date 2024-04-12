@@ -286,6 +286,8 @@ public record DFA(Set<State> states, Alphabet alphabet, DeterministicTransition 
 
     /**
      * Create a copy of this DFA with all redundant or useless states removed.
+     * Redundant states are defined according to the Myhill-Nerode Theorem
+     * on DFA state distinguishability.
      * @return a copy of this DFA with states removed and the transition
      * function modified to ensure the number of states is as small
      * as possible.
